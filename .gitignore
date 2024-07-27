@@ -1,0 +1,12 @@
+# Node.js
+node_modules
+dist
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Generated Files
+swagger.json
+migrations/
