@@ -7,12 +7,12 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { employer_profile, users } from "./schema";
+import { employer_profile, users } from ".";
 
 export const gigs = pgTable("gigs", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
   user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
-  empoyer_id: uuid("empoyer_id").references(() => employer_profile.id, {
+  employer_id: uuid("employer_id").references(() => employer_profile.id, {
     onDelete: "cascade",
   }),
   title: varchar("title"),
