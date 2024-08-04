@@ -3,7 +3,7 @@ import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 export const userEnum = pgEnum("user_enum", ["admin", "client", "company"]);
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
-  email: varchar("email").unique().unique(),
+  email: varchar("email").unique().notNull(),
   password_hash: varchar("password_hash").notNull(),
   user_type: userEnum("user_type").notNull(),
   created_at: timestamp("created_at", {
@@ -15,6 +15,9 @@ export const users = pgTable("users", {
     withTimezone: true,
   }).$onUpdate(() => new Date()),
 });
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 
 export const employer_profile = pgTable("employer_profile", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
