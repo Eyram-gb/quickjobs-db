@@ -1,4 +1,5 @@
-import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { sql, SQL } from "drizzle-orm";
+import { AnyPgColumn, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userEnum = pgEnum("user_enum", ["admin", "client", "company"]);
 export const users = pgTable("users", {
@@ -49,3 +50,7 @@ export const applicant_profile = pgTable("applicant_profile", {
     withTimezone: true,
   }).$onUpdate(() => new Date()),
 });
+
+export function lower(input: AnyPgColumn): SQL {
+  return sql`lower(${input})`;
+}
