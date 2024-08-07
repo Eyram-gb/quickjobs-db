@@ -54,6 +54,9 @@ export const employer_profile = pgTable("employer_profile", {
 }
 );
 
+export type EmployerProfile = typeof employer_profile.$inferSelect;
+export type NewEmployerProfile = typeof employer_profile.$inferInsert;
+
 export const applicant_profile = pgTable("applicant_profile", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
   user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
@@ -74,6 +77,9 @@ export const applicant_profile = pgTable("applicant_profile", {
     withTimezone: true,
   }).$onUpdate(() => new Date()),
 });
+
+export type ApplicantProfile = typeof applicant_profile.$inferSelect;
+export type NewApplicantProfile = typeof applicant_profile.$inferInsert;
 
 export function lower(input: AnyPgColumn): SQL {
   return sql`lower(${input})`;
