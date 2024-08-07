@@ -1,21 +1,38 @@
 import { sql, SQL } from "drizzle-orm";
-import { AnyPgColumn, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  AnyPgColumn,
+  index,
+  pgEnum,
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const userEnum = pgEnum("user_enum", ["admin", "client", "company"]);
-export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey().unique(),
-  email: varchar("email").unique().notNull(),
-  password_hash: varchar("password_hash").notNull(),
-  user_type: userEnum("user_type").notNull(),
-  created_at: timestamp("created_at", {
-    precision: 0,
-    withTimezone: true,
-  }).defaultNow(),
-  updated_at: timestamp("updated_at", {
-    precision: 0,
-    withTimezone: true,
-  }).$onUpdate(() => new Date()),
-});
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").defaultRandom().primaryKey().unique(),
+    email: varchar("email").unique().notNull(),
+    password_hash: varchar("password_hash").notNull(),
+    user_type: userEnum("user_type").notNull(),
+    created_at: timestamp("created_at", {
+      precision: 0,
+      withTimezone: true,
+    }).defaultNow(),
+    updated_at: timestamp("updated_at", {
+      precision: 0,
+      withTimezone: true,
+    }).$onUpdate(() => new Date()),
+  },
+  (table) => {
+    return {
+      idIdx: index("id_idx").on(table.id),
+      emailIdx: index("email_idx").on(table.email),
+    };
+  }
+);
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -28,7 +45,14 @@ export const employer_profile = pgTable("employer_profile", {
   location: varchar("location"),
   website_url: varchar("website_url"),
   industry: varchar("industry"),
-});
+}, 
+(table)=>{
+  return {
+    nameIdx: index("name_idx").on(table.id),
+    user_idIdx: index("user_id_idx").on(table.user_id),
+  };
+}
+);
 
 export const applicant_profile = pgTable("applicant_profile", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
