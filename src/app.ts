@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import { corsOptions } from "./lib/constants";
+import { authRoutes } from "./routes/auth";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "5mb" }));
 
 app.use("/api", userRoutes);
+app.use("/api", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("We are live on quikjobs server");
