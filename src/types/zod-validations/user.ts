@@ -9,9 +9,9 @@ export const NewUserSchema = z.object({
       required_error: "email is required",
     })
     .email({ message: "email is not a valid email." }),
-  password_hash: z.string({
-    description: "password hash of user",
-    required_error: "password hash is required",
+  password: z.string({
+    description: "password of user",
+    required_error: "password is required",
   }),
   user_type: z.enum(USER_TYPES),
 });
