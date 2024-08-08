@@ -32,6 +32,13 @@ export async function findAllUsers() {
   const { password_hash, ...rest } = getTableColumns(users); // remove password from data being returned
   return await db.select({ ...rest }).from(users);
 }
+
+export async function findAllApplicants() {
+  return await db.select().from(users).where(eq(users.user_type, "client"));
+}
+export async function findAllEmployers() {
+  return await db.select().from(users).where(eq(users.user_type, "company"));
+}
 export async function findUserById(id: string) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password_hash, ...rest } = getTableColumns(users); // remove password from data being returned

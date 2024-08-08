@@ -3,11 +3,13 @@ import { Request, Response } from "express";
 import logger from "../lib/logger";
 import {
   findAllUsers,
+  findAllApplicants,
   findUserById,
   insertNewApplicantProfile,
   insertNewEmployerProfile,
   modifyApplicantProfile,
   modifyEmployerProfile,
+  findAllEmployers,
 } from "../models/queries/users";
 import {
   NewApplicantSchema,
@@ -45,6 +47,78 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllApplicants = async (req: Request, res: Response) => {
+  try {
+    const allApplicants = await findAllApplicants();
+    if (!allApplicants) {
+      return res.status(404).json({ message: "No applicants found" });
+    }
+    return res.status(200).json(allApplicants);
+  } catch (error) {
+    logger.error("Failed to get all user applicants");
+    console.error("Failed to get all user applicants: ", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get all user applicants", error });
+  }
+};
+
+export const getApplicantById = async (req: Request, res: Response) => {
+  try {
+    const applicantId = req.params.id;
+    if (!applicantId) {
+      return res.status(400).json({ message: "no applicant ID provided" });
+    }
+    const [applicant] = await findUserById(applicantId);
+
+    if (!applicant) {
+      return res.status(404).json({ message: "Applicant not found" });
+    }
+
+    return res.status(200).json(applicant);
+  } catch (error) {
+    logger.error("Failed to get applicant by ID");
+    console.error("Failed to get applicant by ID: ", error);
+    return res.status(500).json({ message: "Failed to get applicant by ID", error });
+  }
+}
+
+export const getAllEmployers = async (req: Request, res: Response) => {
+  try {
+    const allEmployers = await findAllEmployers();
+    if (!allEmployers) {
+      return res.status(404).json({ message: "No applicants found" });
+    }
+    return res.status(200).json(allEmployers);
+  } catch (error) {
+    logger.error("Failed to get all user employers");
+    console.error("Failed to get all user employers: ", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get all user employers", error });
+  }
+};
+
+export const getEmployerById = async (req: Request, res: Response) => {
+  try {
+    const employerId = req.params.id;
+    if (!employerId) {
+      return res.status(400).json({ message: "no employer ID provided" });
+    }
+    const [employer] = await findUserById(employerId);
+
+    if (!employer) {
+      return res.status(404).json({ message: "Employer not found" });
+    }
+
+    return res.status(200).json(employer);
+  } catch (error) {
+    logger.error("Failed to get employer by ID");
+    console.error("Failed to get employer by ID: ", error);
+    return res.status(500).json({ message: "Failed to get employer by ID", error });
+  }
+}
+
 export const createApplicantProfile = async (req: Request, res: Response) => {
   try {
     await NewApplicantSchema.parseAsync(req.body);
@@ -65,6 +139,7 @@ export const createApplicantProfile = async (req: Request, res: Response) => {
     return logger.error(error);
   }
 };
+
 export const createEmployerProfile = async (req: Request, res: Response) => {
   try {
     await NewEmployerSchema.parseAsync(req.body);
@@ -113,6 +188,7 @@ export const updateApplicantProfile = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Failed to update user", error });
   }
 };
+
 export const updateEmployerProfile = async (req: Request, res: Response) => {
   // TODO: add a middleware to validate provided params.id
   try {
