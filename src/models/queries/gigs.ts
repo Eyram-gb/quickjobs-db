@@ -17,3 +17,7 @@ export async function createGig(gigBody: TGig) {
 export async function editGig(id: string, gigBody: TGig ) {
     return await db.update(gigs).set(gigBody).where(eq(gigs.id, id)).returning();
 }
+
+export async function removeGig(id: string) {
+  return await db.update(gigs).set({ is_deleted: true }).where(eq(gigs.id, id)).returning();
+}

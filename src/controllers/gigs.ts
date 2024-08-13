@@ -5,6 +5,7 @@ import {
   editGig,
   findAllGigs,
   findGigById,
+  removeGig
 } from "../models/queries/gigs";
 import { GigSchema } from "../types/zod-validations/gig";
 import { TGig } from "../models/schema/gigs";
@@ -75,3 +76,26 @@ export const updateGig = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Failed to update gig", error });
   }
 };
+
+export const deleteGig = async (req:Request, res:Response) => {
+  try {
+    const gigId = req.params.id;
+    if (!gigId) {
+      return res.status(400).json({ message: "No gig ID provided" });
+    }
+    const [gig] = await findGigById(gigId);
+    if (!gig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+    const deletedGig = await removeGig(gigId);
+    if (!deletedGig) {
+       return res.status(404).json({ message: "Gig not found" });
+    }
+    
+    return res.status(204).json({ message: "Gig deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    logger.error(error);
+    return res.status(500).json({ message: "Failed to delete gig", error });
+  }
+}
