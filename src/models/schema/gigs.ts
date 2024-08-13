@@ -1,6 +1,5 @@
 import {
   boolean,
-  decimal,
   pgTable,
   text,
   timestamp,
@@ -19,12 +18,12 @@ export const gigs = pgTable("gigs", {
   description: varchar("description"),
   duration: varchar("duration"),
   location: varchar("location"),
-  budget_range: decimal("budget_range").notNull(),
+  budget_range: varchar("budget_range").notNull(),
+  requirements: text("requirements"),
   created_at: timestamp("created_at", {
     precision: 0,
     withTimezone: true,
   }).defaultNow(),
-  requirements: text("requirements"),
   updated_at: timestamp("updated_at", {
     precision: 0,
     withTimezone: true,
@@ -33,3 +32,4 @@ export const gigs = pgTable("gigs", {
   is_deleted: boolean("is_deleted").default(false),
   //   is_featured: boolean("is_featured").default(false),
 });
+export type TGig = typeof gigs.$inferInsert;
