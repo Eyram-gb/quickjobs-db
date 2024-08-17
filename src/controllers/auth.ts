@@ -6,9 +6,9 @@ import {
 } from "../models/queries/users";
 // import { NewUser } from "../models/schema";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { NewUserSchema } from "../types/zod-validations/user";
 import logger from "../lib/logger";
+import { generateAccessJWT } from "../utils/generateAccessJWT";
 
 export const registerNewUser = async (req: Request, res: Response) => {
   try {
@@ -40,7 +40,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { password, email } = await req.body;
+    const { password, email, id } = await req.body;
     if (!email || !password) {
       return res.status(400).json({
         message: "Missing email or password",
@@ -59,25 +59,29 @@ export const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
       return res.status(401).json({
         message: "Invalid password",
       });
     }
 
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.ACCESS_TOKEN_SECRET as string
-    );
+    const token = generateAccessJWT(id);
     if (!token) {
       throw new Error("Token generation failed");
     }
+    const options = {
+      maxAge: 20 * 60 * 1000, // would expire in 20minutes
+      httpOnly: true, // The cookie is only accessible by the web server
+      secure: true,
+      // sameSite: "None",
+    };
+
+    res.cookie("SessionID", token, options);
 
     logger.info("User logged in successfully!");
     return res.status(201).json({
-      message: "login succesful",
-      token,
+      message: "You have logged in successfully",
       user: {
         id: user.id,
         email: user.email,

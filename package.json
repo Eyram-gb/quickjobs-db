@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "bun run swagger && tsc",
+    "build": "bun run tsc",
     "dev": "bun run nodemon src/app.ts",
     "start": "node dist/app.js",
     "lint": "eslint . --ext .ts",
