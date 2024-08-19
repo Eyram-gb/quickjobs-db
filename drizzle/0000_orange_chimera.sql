@@ -14,6 +14,21 @@ CREATE TABLE IF NOT EXISTS "applications" (
 	CONSTRAINT "applications_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "education" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid,
+	"institution" varchar NOT NULL,
+	"certificate" varchar,
+	"start_date" timestamp,
+	"end_date" timestamp,
+	"description" varchar,
+	"degree_type" varchar,
+	"field_of_study" varchar,
+	"created_at" timestamp (0) with time zone DEFAULT now(),
+	"updated_at" timestamp (0) with time zone,
+	CONSTRAINT "education_id_unique" UNIQUE("id")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "gigs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid,
@@ -22,9 +37,9 @@ CREATE TABLE IF NOT EXISTS "gigs" (
 	"description" varchar,
 	"duration" varchar,
 	"location" varchar,
-	"budget_range" numeric NOT NULL,
-	"created_at" timestamp (0) with time zone DEFAULT now(),
+	"budget_range" varchar NOT NULL,
 	"requirements" text,
+	"created_at" timestamp (0) with time zone DEFAULT now(),
 	"updated_at" timestamp (0) with time zone,
 	"is_active" boolean DEFAULT true,
 	"is_deleted" boolean DEFAULT false,
@@ -33,9 +48,12 @@ CREATE TABLE IF NOT EXISTS "gigs" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "applicant_profile" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid,
+	"user_id" uuid NOT NULL,
 	"first_name" varchar NOT NULL,
 	"last_name" varchar NOT NULL,
+	"profile_url" varchar NOT NULL,
+	"banner" varchar,
+	"other_name" varchar,
 	"bio" varchar,
 	"resume_url" varchar,
 	"skills" varchar,
@@ -51,10 +69,10 @@ CREATE TABLE IF NOT EXISTS "employer_profile" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid,
 	"name" varchar NOT NULL,
+	"description" varchar NOT NULL,
 	"logo_url" varchar,
 	"location" varchar,
 	"website_url" varchar,
-	"industry" varchar,
 	CONSTRAINT "employer_profile_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
@@ -69,15 +87,6 @@ CREATE TABLE IF NOT EXISTS "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "messages" (
-	"id" bigserial NOT NULL,
-	"sender_id" uuid,
-	"recipient_id" uuid,
-	"message_text" text NOT NULL,
-	"created_at" timestamp (0) with time zone DEFAULT now(),
-	"updated_at" timestamp (0) with time zone
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "reviews" (
 	"id" bigserial NOT NULL,
 	"reviewer_id" uuid,
@@ -85,6 +94,21 @@ CREATE TABLE IF NOT EXISTS "reviews" (
 	"gig_id" uuid,
 	"rating" smallint DEFAULT 5,
 	"review_text" text,
+	"created_at" timestamp (0) with time zone DEFAULT now(),
+	"updated_at" timestamp (0) with time zone
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "industries" (
+	"id" bigserial PRIMARY KEY NOT NULL,
+	"industry_name" varchar,
+	CONSTRAINT "industries_id_unique" UNIQUE("id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "messages" (
+	"id" bigserial NOT NULL,
+	"sender_id" uuid,
+	"recipient_id" uuid,
+	"message_text" text NOT NULL,
 	"created_at" timestamp (0) with time zone DEFAULT now(),
 	"updated_at" timestamp (0) with time zone
 );
@@ -103,6 +127,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "applications" ADD CONSTRAINT "applications_applicant_id_applicant_profile_id_fk" FOREIGN KEY ("applicant_id") REFERENCES "public"."applicant_profile"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "education" ADD CONSTRAINT "education_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -132,18 +162,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_users_id_fk" FOREIGN KEY ("sender_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "messages" ADD CONSTRAINT "messages_recipient_id_users_id_fk" FOREIGN KEY ("recipient_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "reviews" ADD CONSTRAINT "reviews_reviewer_id_users_id_fk" FOREIGN KEY ("reviewer_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -160,3 +178,20 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_users_id_fk" FOREIGN KEY ("sender_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "messages" ADD CONSTRAINT "messages_recipient_id_users_id_fk" FOREIGN KEY ("recipient_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "name_idx" ON "employer_profile" USING btree ("id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_id_idx" ON "employer_profile" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "id_idx" ON "users" USING btree ("id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "email_idx" ON "users" USING btree ("email");
