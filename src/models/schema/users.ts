@@ -52,12 +52,12 @@ export const employer_profile = pgTable(
     logo_url: varchar("logo_url"),
     location: varchar("location"),
     website_url: varchar("website_url"),
-    // industry_id: bigserial("industry_id", { mode: "number" }).references(
-    //   () => industries.id,
-    //   {
-    //     onDelete: "cascade",
-    //   }
-    // ),
+    industry_id: bigserial("industry_id", { mode: "number" }).references(
+      () => industries.id,
+      {
+        onDelete: "cascade",
+      }
+    ),
   },
   (table) => {
     return {
@@ -83,12 +83,12 @@ export const applicant_profile = pgTable("applicant_profile", {
   bio: varchar("bio"),
   resume_url: varchar("resume_url"),
   skills: varchar("skills"),
-  // industry_id: bigserial("industry_id", { mode: "number" }).references(
-  //   () => industries.id,
-  //   {
-  //     onDelete: "cascade",
-  //   }
-  // ),
+  industry_id: bigserial("industry_id", { mode: "number" }).references(
+    () => industries.id,
+    {
+      onDelete: "cascade",
+    }
+  ),
   location: varchar("location"),
   education: varchar("education"),
   experience: varchar("experience"),

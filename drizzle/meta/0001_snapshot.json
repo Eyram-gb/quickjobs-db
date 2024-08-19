@@ -1,6 +1,6 @@
 {
-  "id": "3e187fd2-fc00-4be7-9bd2-0694aa9721ee",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "2577cec0-0a24-4c70-8bf8-ab0fe5dd28b6",
+  "prevId": "3e187fd2-fc00-4be7-9bd2-0694aa9721ee",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -379,6 +379,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "industry_id": {
+          "name": "industry_id",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
+        },
         "location": {
           "name": "location",
           "type": "varchar",
@@ -419,6 +425,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "applicant_profile_industry_id_industries_id_fk": {
+          "name": "applicant_profile_industry_id_industries_id_fk",
+          "tableFrom": "applicant_profile",
+          "tableTo": "industries",
+          "columnsFrom": [
+            "industry_id"
           ],
           "columnsTo": [
             "id"
@@ -484,6 +503,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "industry_id": {
+          "name": "industry_id",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {
@@ -525,6 +550,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "employer_profile_industry_id_industries_id_fk": {
+          "name": "employer_profile_industry_id_industries_id_fk",
+          "tableFrom": "employer_profile",
+          "tableTo": "industries",
+          "columnsFrom": [
+            "industry_id"
           ],
           "columnsTo": [
             "id"

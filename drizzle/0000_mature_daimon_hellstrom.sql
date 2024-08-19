@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS "reviews" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "industries" (
 	"id" bigserial PRIMARY KEY NOT NULL,
-	"industry_name" varchar,
+	"industry_name" "industries_enum",
 	CONSTRAINT "industries_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
