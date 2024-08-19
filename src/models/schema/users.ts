@@ -40,7 +40,9 @@ export type NewUser = typeof users.$inferInsert;
 export const employer_profile = pgTable("employer_profile", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
   user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  email: varchar('email').references(() => users.email, { onDelete: "cascade" }),
   name: varchar("name").notNull(),
+  description: varchar('description').notNull(),
   logo_url: varchar("logo_url"),
   location: varchar("location"),
   website_url: varchar("website_url"),
@@ -59,9 +61,13 @@ export type NewEmployerProfile = typeof employer_profile.$inferInsert;
 
 export const applicant_profile = pgTable("applicant_profile", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
-  user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  email: varchar('email').references(() => users.email, { onDelete: "cascade" }),
   first_name: varchar("first_name").notNull(),
   last_name: varchar("last_name").notNull(),
+  profile_url: varchar("profile_url").notNull(),
+  banner: varchar("banner"),
+  other_name: varchar("other_name"),
   bio: varchar("bio"),
   resume_url: varchar("resume_url"),
   skills: varchar("skills"),

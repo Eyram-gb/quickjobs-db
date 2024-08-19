@@ -43,7 +43,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const { password, email, id } = await req.body;
     if (!email || !password) {
       return res.status(400).json({
-        message: "Missing email or password",
+        message: "Invalid request",
       });
     }
     if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -53,16 +53,12 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const [user] = await findUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-    if (!isPasswordValid) {
+    if (!user || !isPasswordValid) {
+      logger.info(`Login failed for email: ${email}`);
       return res.status(401).json({
-        message: "Invalid password",
+        message: "Invalid credentials",
       });
     }
 
@@ -92,7 +88,7 @@ export const loginUser = async (req: Request, res: Response) => {
     console.error(error);
     logger.error(error);
     return res.status(500).json({
-      message: "User login failed.",
+      message: "An error occurred during login.",
       error,
     });
   }
