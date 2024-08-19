@@ -8,3 +8,14 @@ export const corsOptions: CorsOptions = {
     callback(null, true);
   },
 };
+
+export const industriesArr = [
+  "Marketing and Communications",
+  "Banking and Finance",
+  "Healthcare and Life Sciences",
+  "Education and Research",
+  "Entertainment and Media",
+  "Environment and Sustainability",
+  "Government and Non-Profit",
+  "Professional Services",
+] as const;

@@ -3,6 +3,7 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { industries } from "../models/schema";
+import { industriesArr } from "./constants";
 
 async function seed() {
   const client = postgres(process.env.DATABASE_URL ?? "", { max: 1 });
@@ -10,16 +11,6 @@ async function seed() {
 
   console.log("Seeding industries table initiated.");
 
-  const industriesArr = [
-    "Marketing and Communications",
-    "Banking and Finance",
-    "Healthcare and Life Sciences",
-    "Education and Research",
-    "Entertainment and Media",
-    "Environment and Sustainability",
-    "Government and Non-Profit",
-    "Professional Services",
-  ];
 
   console.log("Seeding the industries table.");
   await db.transaction(async (tx) => {

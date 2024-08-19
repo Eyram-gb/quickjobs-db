@@ -1,6 +1,7 @@
-import { bigserial, pgTable, varchar } from 'drizzle-orm/pg-core';
+import { bigserial, pgTable } from 'drizzle-orm/pg-core';
+import { industriesEnum } from './users';
 
-export const industries = pgTable('industries', {
-    id: bigserial('id', { mode: 'number' }).primaryKey().unique(),
-    name: varchar('name', { length: 150 }).notNull().unique(),
-})
+export const industries = pgTable("industries", {
+  id: bigserial("id", { mode: "number" }).primaryKey().unique(),
+  name: industriesEnum("name").notNull(),
+});
