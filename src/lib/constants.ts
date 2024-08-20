@@ -7,6 +7,7 @@ export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     callback(null, true);
   },
+  credentials: true,
 };
 
 export const industriesArr = [
