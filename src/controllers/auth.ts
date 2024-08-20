@@ -62,15 +62,17 @@ export const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    const token = generateAccessJWT(id);
+    const token = await generateAccessJWT(id);
     if (!token) {
       throw new Error("Token generation failed");
     }
+    console.log("token", token);
+
     const options = {
-      maxAge: 20 * 60 * 1000, // would expire in 20minutes
+      maxAge: 1200000, // would expire in 20minutes
       httpOnly: true, // The cookie is only accessible by the web server
       secure: true,
-      // sameSite: "None",
+      sameSite: "none" as const,
     };
 
     res.cookie("SessionID", token, options);
