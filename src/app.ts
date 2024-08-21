@@ -6,10 +6,13 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { corsOptions } from "./lib/constants";
 import { authRoutes } from "./routes/auth";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
+
+app.use(cookieParser());
 
 // Middleware for logging requests
 app.use(morgan("combined", { stream: { write: (msg) => logger.info(msg) } }));

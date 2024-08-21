@@ -11,11 +11,12 @@ import {
   createApplicantProfile,
   createEmployerProfile,
 } from "../controllers/users";
+import { Verify } from "../middleware/verify";
 
 const router = Router();
 
 router.get("/users", getAllUsers);
-router.get("/users/:id", getUserById);
+router.get("/users/:id", Verify, getUserById);
 
 router.get("/users/applicants", getAllApplicants);
 router.get("/users/applicants/:id", getApplicantById);

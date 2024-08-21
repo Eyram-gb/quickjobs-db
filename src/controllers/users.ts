@@ -38,6 +38,8 @@ export const getUserById = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    console.log('--------COOKIE--------', req.headers.cookie);
+    
 
     return res.status(200).json(user);
   } catch (error) {

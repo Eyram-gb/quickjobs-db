@@ -66,17 +66,18 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!token) {
       throw new Error("Token generation failed");
     }
-    console.log("token", token);
+    // console.log("token", token);
 
     const options = {
       maxAge: 20 * 60 * 1000, // would expire in 20minutes
       httpOnly: true, // The cookie is only accessible by the web server
-      secure: true,
-      sameSite: "none" as const,
+      secure: false,
+      // path: '/',
+      // sameSite: "none" as const,
     };
 
-    res.cookie("SessionID", token, options);
-
+    res.cookie("QJSessionID", token, options);
+    // const cook = res.cookie("SessionID", token, options);
     logger.info("User logged in successfully!");
     return res.status(201).json({
       message: "You have logged in successfully",
