@@ -5,17 +5,14 @@ import logger from "../lib/logger";
 export async function Verify(req: Request, res: Response, next: NextFunction) {
   try {
     const cookieHeader = req.headers["cookie"]; // get the session cookie from request header
-    console.log(cookieHeader);
+    console.log(req.headers["cookie"]);
 
     // if there is no cookie from request header, send an unauthorized response.
     if (!cookieHeader) {
       return res.status(401).json({ message: "Unauthorized: No cookie found" });
     }
     const cookie = cookieHeader.split("=")[1]; // If there is, split the cookie string to get the actual jwt
-    // const cookies = cookie.parse(cookieHeader);
-    // const token = cookies.QJSessionID;
-    // console.log(token);
-    
+
     // Verify using jwt to see if token has been tampered with or if it has expired.
     // that's like checking the integrity of the cookie
     jwt.verify(
