@@ -4,6 +4,12 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."industry_enum" AS ENUM('Marketing and Communications', 'Banking and Finance', 'Healthcare and Life Sciences', 'Education and Research', 'Entertainment and Media', 'Environment and Sustainability', 'Government and Non-Profit', 'Professional Services');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "applications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"gig_id" uuid,
@@ -52,7 +58,7 @@ CREATE TABLE IF NOT EXISTS "applicant_profile" (
 	"first_name" varchar NOT NULL,
 	"last_name" varchar NOT NULL,
 	"profile_url" varchar NOT NULL,
-	"banner" varchar,
+	"banner_url" varchar,
 	"other_name" varchar,
 	"bio" varchar,
 	"resume_url" varchar,
@@ -100,7 +106,7 @@ CREATE TABLE IF NOT EXISTS "reviews" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "industries" (
 	"id" bigserial PRIMARY KEY NOT NULL,
-	"industry_name" "industries_enum",
+	"name" "industry_enum",
 	CONSTRAINT "industries_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint

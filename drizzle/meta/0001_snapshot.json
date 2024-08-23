@@ -1,6 +1,6 @@
 {
-  "id": "2577cec0-0a24-4c70-8bf8-ab0fe5dd28b6",
-  "prevId": "3e187fd2-fc00-4be7-9bd2-0694aa9721ee",
+  "id": "3bc3387b-19e1-4a18-a3a3-60bc11a5c919",
+  "prevId": "8268c0fc-a986-4a9d-9ff3-eb8016456ba7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -349,8 +349,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "banner": {
-          "name": "banner",
+        "banner_url": {
+          "name": "banner_url",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -787,9 +787,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "industry_name": {
-          "name": "industry_name",
-          "type": "industries_enum",
+        "name": {
+          "name": "name",
+          "type": "industry_enum",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -921,6 +921,20 @@
         "admin",
         "client",
         "company"
+      ]
+    },
+    "public.industry_enum": {
+      "name": "industry_enum",
+      "schema": "public",
+      "values": [
+        "Marketing and Communications",
+        "Banking and Finance",
+        "Healthcare and Life Sciences",
+        "Education and Research",
+        "Entertainment and Media",
+        "Environment and Sustainability",
+        "Government and Non-Profit",
+        "Professional Services"
       ]
     }
   },

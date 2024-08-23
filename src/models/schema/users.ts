@@ -78,7 +78,7 @@ export const applicant_profile = pgTable("applicant_profile", {
   first_name: varchar("first_name").notNull(),
   last_name: varchar("last_name").notNull(),
   profile_url: varchar("profile_url").notNull(),
-  banner: varchar("banner"),
+  banner_url: varchar("banner_url"),
   other_name: varchar("other_name"),
   bio: varchar("bio"),
   resume_url: varchar("resume_url"),

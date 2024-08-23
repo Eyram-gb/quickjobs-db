@@ -1,9 +1,18 @@
-import { bigserial, pgEnum, pgTable } from 'drizzle-orm/pg-core';
-import { industriesArr } from '../../lib/constants';
+import { bigserial, pgEnum, pgTable } from "drizzle-orm/pg-core";
+// import { industriesArr } from '../../lib/constants';
 
-const industriesEnum = pgEnum("industries_enum", industriesArr);
+export const industriesEnum = pgEnum("industry_enum", [
+  "Marketing and Communications",
+  "Banking and Finance",
+  "Healthcare and Life Sciences",
+  "Education and Research",
+  "Entertainment and Media",
+  "Environment and Sustainability",
+  "Government and Non-Profit",
+  "Professional Services",
+]);
 
 export const industries = pgTable("industries", {
   id: bigserial("id", { mode: "number" }).primaryKey().unique(),
-  industry_name: industriesEnum("industry_name"),
+  name: industriesEnum("name"),
 });

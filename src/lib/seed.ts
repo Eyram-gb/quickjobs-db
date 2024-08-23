@@ -15,11 +15,11 @@ async function seed() {
   console.log("Seeding the industries table.");
   await db.transaction(async (tx) => {
     for (const industry of industriesArr) {
-      const [{ id, industry_name }] = await tx
+      const [{ id, name }] = await tx
         .insert(industries)
-        .values({ industry_name: industry })
+        .values({ name: industry })
         .returning();
-      console.log(`added: ${id} - ${industry_name}`);
+      console.log(`added: ${id} - ${name}`);
     }
   });
   console.log("Seeding of the industries table is complete.");

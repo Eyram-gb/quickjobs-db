@@ -16,7 +16,7 @@ export const NewUserSchema = z.object({
   user_type: z.enum(USER_TYPES),
 });
 
-export const  NewApplicantSchema = z.object({
+export const NewApplicantSchema = z.object({
   user_id: z.string({
     description: "userId of user",
     required_error: "userId is required",
@@ -25,10 +25,26 @@ export const  NewApplicantSchema = z.object({
     description: "first name of user",
     required_error: "first name is required",
   }),
+  other_name: z.string({
+    description: "other name of user",
+  }).optional(),
   last_name: z.string({
     description: "last name of user",
     required_error: "last name is required",
   }),
+  profile_url: z
+    .string({
+      description: "Profile image url of user",
+    })
+    .optional(),
+  banner: z
+    .string({
+      description: "Banner image url of user",
+    })
+    .optional(),
+    industry_id: z.number({
+      description: "Industry ID of user",
+    }).optional(),
   bio: z.string().max(150).optional(),
   resume_url: z.string().optional(),
   skills: z.string().optional(),
