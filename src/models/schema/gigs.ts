@@ -1,4 +1,5 @@
 import {
+  bigserial,
   boolean,
   pgTable,
   text,
@@ -6,7 +7,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { employer_profile, users } from ".";
+import { employer_profile, industries, users } from ".";
 
 export const gigs = pgTable("gigs", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
@@ -19,7 +20,14 @@ export const gigs = pgTable("gigs", {
   duration: varchar("duration"),
   location: varchar("location"),
   budget_range: varchar("budget_range").notNull(),
+  negotiable: boolean("negotiable"),
   requirements: text("requirements"),
+  industry_id: bigserial("industry_id", { mode: "number" }).references(
+    () => industries.id,
+    {
+      onDelete: "cascade",
+    }
+  ),
   created_at: timestamp("created_at", {
     precision: 0,
     withTimezone: true,

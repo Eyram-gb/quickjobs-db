@@ -14,3 +14,5 @@ router.get("/gigs/:id", getGigById);
 router.put("/gigs/:id", updateGig);
 router.post("/gigs", createNewGig);
 router.delete("/gigs/:id", deleteGig);
+
+export const gigRoutes = router;

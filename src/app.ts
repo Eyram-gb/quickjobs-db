@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { corsOptions } from "./lib/constants";
 import { authRoutes } from "./routes/auth";
 import cookieParser from "cookie-parser";
+import { industriesRoutes } from "./routes/industries";
+import { gigRoutes } from "./routes/gigs";
 
 dotenv.config();
 
@@ -21,8 +23,10 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "5mb" }));
 
+app.use("/api", authRoutes); 
 app.use("/api", userRoutes);
-app.use("/api", authRoutes);
+app.use("/api", gigRoutes); 
+app.use("/api", industriesRoutes);
 
 app.get("/", (req, res) => {
   res.send("We are live on quikjobs server");
