@@ -135,7 +135,7 @@ export const createApplicantProfile = async (req: Request, res: Response) => {
       return res.status(500).json({ message: "Failed to create user" });
     }
 
-    return res.status(201).json(applicantProfile);
+    return res.status(201).json(applicantProfile[0]);
   } catch (error) {
     console.error(error);
     return logger.error(error);
@@ -156,7 +156,7 @@ export const createEmployerProfile = async (req: Request, res: Response) => {
       return res.status(500).json({ message: "Failed to create user" });
     }
 
-    return res.status(201).json(employerProfile);
+    return res.status(201).json(employerProfile[0]);
   } catch (error) {
     console.error(error);
     return logger.error(error);

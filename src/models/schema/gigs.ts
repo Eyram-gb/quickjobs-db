@@ -20,7 +20,7 @@ export const gigs = pgTable("gigs", {
   duration: varchar("duration"),
   location: varchar("location"),
   budget_range: varchar("budget_range").notNull(),
-  negotiable: boolean("negotiable"),
+  // negotiable: boolean("negotiable"),
   requirements: text("requirements"),
   industry_id: bigserial("industry_id", { mode: "number" }).references(
     () => industries.id,

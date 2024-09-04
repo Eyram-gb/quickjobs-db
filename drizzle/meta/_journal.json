@@ -15,6 +15,13 @@
       "when": 1724447766543,
       "tag": "0001_stiff_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724529376618,
+      "tag": "0002_sad_rogue",
+      "breakpoints": true
     }
   ]
 }
