@@ -18,3 +18,6 @@ export const applications = pgTable("applications", {
     withTimezone: true,
   }).$onUpdate(() => new Date()),
 });
+
+export type TNewApplication = typeof applications.$inferInsert;
+export type TApplication = typeof applications.$inferSelect;
