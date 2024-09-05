@@ -18,3 +18,4 @@ export const newApplication = async (req: Request, res: Response) => {
     console.log(error);
     return logger.error("Could not insert new application");
   };
+}

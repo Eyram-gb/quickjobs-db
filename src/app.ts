@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth";
 import cookieParser from "cookie-parser";
 import { industriesRoutes } from "./routes/industries";
 import { gigRoutes } from "./routes/gigs";
+import { applicationsRoutes } from "./routes/applications";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", gigRoutes); 
 app.use("/api", industriesRoutes);
+app.use("/api", applicationsRoutes);
 
 app.get("/", (req, res) => {
   res.send("We are live on quikjobs server");
