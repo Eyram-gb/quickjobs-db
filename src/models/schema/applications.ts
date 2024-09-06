@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { applicant_profile } from "./users";
 import { gigs } from "./gigs";
 
@@ -8,7 +8,7 @@ export const applications = pgTable("applications", {
   applicant_id: uuid("applicant_id").references(() => applicant_profile.id, {
     onDelete: "cascade",
   }),
-  cv_url: uuid("cv_url"),
+  cv_url: varchar("cv_url"),
   created_at: timestamp("created_at", {
     precision: 0,
     withTimezone: true,

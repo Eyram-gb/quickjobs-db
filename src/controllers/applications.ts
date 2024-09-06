@@ -6,7 +6,7 @@ import { TNewApplication } from "../models/schema";
 export const newApplication = async (req: Request, res: Response) => {
   try {
     const data = req.body as TNewApplication;
-    const resData = await insertNewApplication(data);
+    const resData = await insertNewApplication(data) as TNewApplication;
     if (!resData) {
       console.log("Could not insert new application");
       return logger.error("Could not insert new application");
