@@ -5,6 +5,7 @@ import {
   editGig,
   findAllGigs,
   findGigById,
+  findGigsByEmployerId,
   removeGig
 } from "../models/queries/gigs";
 import { GigSchema } from "../types/zod-validations/gig";
@@ -97,5 +98,22 @@ export const deleteGig = async (req:Request, res:Response) => {
     console.error(error);
     logger.error(error);
     return res.status(500).json({ message: "Failed to delete gig", error });
+  }
+}
+export const getEmployerGigs = async (req:Request, res:Response) => {
+  try{
+    const employerId = req.params.id
+    if(!employerId){
+      return res.status(400).json({message: "No employer ID provided"})
+    }
+    const gigs = await findGigsByEmployerId(employerId)
+    if(!gigs){
+      return res.status(404).json({message: "Gigs not found"})
+    }
+    return res.status(200).json(gigs)
+  }catch(error){
+    console.error(error)
+    logger.error(error)
+    return res.status(500).json({message: "Failed to get employer gigs", error})
   }
 }

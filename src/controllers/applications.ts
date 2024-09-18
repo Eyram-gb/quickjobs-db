@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import logger from "../lib/logger";
-import { insertNewApplication } from "../models/queries/applications";
+import { findEmployerApplications, insertNewApplication } from "../models/queries/applications";
 import { TNewApplication } from "../models/schema";
 
 export const newApplication = async (req: Request, res: Response) => {
@@ -18,4 +18,19 @@ export const newApplication = async (req: Request, res: Response) => {
     console.log(error);
     return logger.error("Could not insert new application");
   };
+}
+
+export const getEmployerApplications = async (req: Request, res: Response) => {
+  try {
+    const employerId = req.params.id;
+    const gigs = await findEmployerApplications(employerId);
+    if (!gigs) {
+      return res.status(404).json({ message: "No gigs found for this employer" });
+    }
+    return res.status(200).json(gigs);
+  } catch (error) {
+    console.error(error);
+    logger.error(error);
+    return res.status(500).json({ message: "Failed to get employer gigs", error });
+  }
 }
