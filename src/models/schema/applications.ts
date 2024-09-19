@@ -9,6 +9,7 @@ export const applications = pgTable("applications", {
     onDelete: "cascade",
   }),
   cv_url: varchar("cv_url"),
+  status: varchar("status"),
   created_at: timestamp("created_at", {
     precision: 0,
     withTimezone: true,

@@ -10,12 +10,17 @@ export async function insertNewApplication(data: TNewApplication) {
 export async function findEmployerApplications(employerId: string) {
   return db
     .select({
-      gig_id: gigs.id,
-      gig_description: gigs.description,
-      gig_title: gigs.title,
+      application_id: applications.id,
+      gig_id: applications.gig_id,
+      applicant_id: applications.applicant_id,
       cv_url: applications.cv_url,
+      created_at: applications.created_at,
+      gig_title: gigs.title,
+      gig_description: gigs.description,
+      // status: applications.status,
     })
-    .from(gigs)
+    .from(applications)
+    .innerJoin(gigs, eq(applications.gig_id, gigs.id))
     .where(eq(gigs.employer_id, employerId))
-    .leftJoin(applications, eq(gigs.id, applications.gig_id));
+    .orderBy(applications.created_at);
 }
