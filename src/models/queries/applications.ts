@@ -1,6 +1,6 @@
 import { applications, TNewApplication } from "./../schema/applications";
 import { db } from "../../lib/db";
-import { gigs } from "../schema";
+import { applicant_profile, gigs, users } from "../schema";
 import { eq } from "drizzle-orm";
 
 export async function insertNewApplication(data: TNewApplication) {
@@ -14,6 +14,9 @@ export async function findEmployerApplications(employerId: string) {
       gig_id: applications.gig_id,
       applicant_id: applications.applicant_id,
       cv_url: applications.cv_url,
+      first_name: applicant_profile.first_name,
+      last_name: applicant_profile.last_name,
+      email: users.email,
       created_at: applications.created_at,
       gig_title: gigs.title,
       gig_description: gigs.description,
@@ -21,6 +24,11 @@ export async function findEmployerApplications(employerId: string) {
     })
     .from(applications)
     .innerJoin(gigs, eq(applications.gig_id, gigs.id))
+    .leftJoin(
+      applicant_profile,
+      eq(applications.applicant_id, applicant_profile.id)
+    )
+    .leftJoin(users, eq(applicant_profile.user_id, users.id))
     .where(eq(gigs.employer_id, employerId))
     .orderBy(applications.created_at);
 }
