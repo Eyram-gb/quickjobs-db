@@ -17,7 +17,7 @@ export async function findEmployerApplications(employerId: string) {
       created_at: applications.created_at,
       gig_title: gigs.title,
       gig_description: gigs.description,
-      // status: applications.status,
+      status: applications.application_status,
     })
     .from(applications)
     .innerJoin(gigs, eq(applications.gig_id, gigs.id))

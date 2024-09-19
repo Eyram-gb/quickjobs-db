@@ -1,6 +1,8 @@
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { applicant_profile } from "./users";
 import { gigs } from "./gigs";
+
+export const applicationStatusEnum = pgEnum("application_status", ["pending", "accepted", "rejected"]);
 
 export const applications = pgTable("applications", {
   id: uuid("id").primaryKey().defaultRandom().unique(),
@@ -9,7 +11,7 @@ export const applications = pgTable("applications", {
     onDelete: "cascade",
   }),
   cv_url: varchar("cv_url"),
-  status: varchar("status"),
+  application_status: applicationStatusEnum("application_status").default("pending"),
   created_at: timestamp("created_at", {
     precision: 0,
     withTimezone: true,

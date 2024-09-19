@@ -29,6 +29,13 @@
       "when": 1725647113879,
       "tag": "0003_illegal_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1726767895612,
+      "tag": "0004_high_cloak",
+      "breakpoints": true
     }
   ]
 }
