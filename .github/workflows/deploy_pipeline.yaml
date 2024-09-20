@@ -34,10 +34,10 @@ jobs:
 
       - name: Run Migrations
         env:
-          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm run drizzle:migrate
 
       - name: Check Migrations
         env:
-          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm run drizzle:check
