@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "bun run tsc",
-    "dev": "bun run nodemon src/app.ts",
+    "build": "npm run tsc",
+    "dev": "npm run nodemon src/app.ts",
     "start": "node dist/app.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --fix --ext .ts",
