@@ -42,7 +42,7 @@ jobs:
           QUICKJOBS_DATABASE_URL: ${{ secrets.QUICKJOBS_DATABASE_URL }}
         run: npm run drizzle:check
 
-      - name: Deploy
+      - name: Deploy on Render
         # Only run this step if the branch is main
         if: github.ref == 'refs/heads/main'
         env:

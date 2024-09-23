@@ -6,7 +6,7 @@ import { industries } from "../models/schema";
 import { industriesArr } from "./constants";
 
 async function seed() {
-  const client = postgres(process.env.DATABASE_URL ?? "", { max: 1 });
+  const client = postgres(process.env.QUICKJOBS_DATABASE_URL ?? "", { max: 1 });
   const db = drizzle(client);
 
   console.log("Seeding industries table initiated.");
