@@ -4,7 +4,7 @@ import logger from "./logger";
 import { Server as SocketIOServer } from "socket.io";
 import { db } from "./db";
 import { messages } from "../models/schema/messages";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 
 export function socketServer(server: Server) {
   const io = new SocketIOServer(server, {
@@ -59,6 +59,22 @@ export function socketServer(server: Server) {
         socket.emit("chatHistory", chatHistory);
       }
     );
+
+    // Get list of users the user is interacting with
+    socket.on("getUserChats", async (userId: string) => {
+      const userChats = await db
+        .select({
+          chatUser: sql`DISTINCT CASE 
+                WHEN ${messages.sender_id} = ${userId} THEN ${messages.recipient_id} 
+                ELSE ${messages.sender_id} 
+              END`
+        })
+        .from(messages)
+        .where(
+          or(eq(messages.sender_id, userId), eq(messages.recipient_id, userId))
+        );
+      socket.emit("userChats", userChats);
+    });
 
     // Disconnect connection
     socket.on("disconnect", () => {
