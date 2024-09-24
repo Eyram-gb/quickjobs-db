@@ -14,6 +14,7 @@ export async function findEmployerApplications(employerId: string) {
       gig_id: applications.gig_id,
       applicant_id: applications.applicant_id,
       cv_url: applications.cv_url,
+      user_id: users.id,
       first_name: applicant_profile.first_name,
       last_name: applicant_profile.last_name,
       email: users.email,

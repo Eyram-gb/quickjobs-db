@@ -67,7 +67,7 @@ export function socketServer(server: Server) {
           chatUser: sql`DISTINCT CASE 
                 WHEN ${messages.sender_id} = ${userId} THEN ${messages.recipient_id} 
                 ELSE ${messages.sender_id} 
-              END`
+              END`,
         })
         .from(messages)
         .where(
