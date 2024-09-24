@@ -6,7 +6,7 @@ export default defineConfig({
   dialect: "postgresql",
   out: "./drizzle",
   dbCredentials: {
-    url: process.env.QUICKJOBS_DATABASE_URL ?? "",
+    url: process.env.QUICKJOBS_DATABASE_URL as string,
   },
   strict: true,
   verbose: true,
