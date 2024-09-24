@@ -21,16 +21,34 @@ export function socketServer(server: Server) {
     });
 
     // Handle messages
-    socket.on("message", async (payload) => {
+    socket.on("message", async (payload, callback) => {
       const { senderId, recipientId, message } = payload;
       logger.info(`Socket: Received message: ${payload}`);
       console.log(payload);
-      // Save message to database
-      await db.insert(messages).values({
-        sender_id: senderId,
-        recipient_id: recipientId,
-        message_text: message,
-      });
+
+      try {
+        
+        const newMessage = await db.insert(messages).values({
+          sender_id: senderId,
+          recipient_id: recipientId,
+          message_text: message,
+        }).returning();
+        return callback({
+          status: "OK",
+          data: {
+            message: newMessage,
+          },
+        });
+      } catch (error) {
+        logger.error("Socket: Failed to add a message to the database");
+        console.error(error);
+        callback({
+          status: "ERROR",
+          error: error as unknown as Error,
+        });
+      }
+
+     // Save message to database      
     });
 
     // Emit message to both sender and recipient
@@ -41,9 +59,10 @@ export function socketServer(server: Server) {
     // logger.info(`Socket: Message sent from ${senderId} to ${recipientId}`);
     socket.on(
       "getChatHistory",
-      async (data: { userId1: string; userId2: string }) => {
+      async (data: { userId1: string; userId2: string }, callback) => {
         const { userId1, userId2 } = data;
 
+        try {
         const chatHistory = await db
           .select()
           .from(messages)
@@ -57,6 +76,16 @@ export function socketServer(server: Server) {
           )
           .orderBy(messages.created_at);
         socket.emit("chatHistory", chatHistory);
+        return callback({
+          status: "OK",
+          data: {
+            chatHistory,
+          },
+        });
+      } catch (error) {
+        logger.error("Socket: Failed to get chat history");
+        console.error(error);
+        }
       }
     );
 
