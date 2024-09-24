@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Migrations
         env:
-          DATABASE_URL: ${{ secrets.QUICKJOBS_DATABASE_URL }}
+          QUICKJOBS_DATABASE_URL: ${{ secrets.QUICKJOBS_DATABASE_URL }}
         run: npm run drizzle:migrate
 
       - name: Check Migrations
