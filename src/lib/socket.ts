@@ -86,8 +86,6 @@ export function socketServer(server: Server) {
           status: "OK",
           data: {
             chatHistory,
-            userId1,
-            userId2
           },
         });
       } catch (error) {
@@ -102,7 +100,7 @@ export function socketServer(server: Server) {
     );
 
     // Get list of users the user is interacting with
-    socket.on("getUserChats", async (userId: string) => {
+    socket.on("getUserChats", async (userId: string, callback) => {
       const userChats = await db
         .select({
           chatUser: sql`DISTINCT CASE 
@@ -115,6 +113,12 @@ export function socketServer(server: Server) {
           or(eq(messages.sender_id, userId), eq(messages.recipient_id, userId))
         );
       socket.emit("userChats", userChats);
+      return callback({
+        status: "OK",
+        data: {
+          userChats,
+        },
+      });
     });
 
     // Disconnect connection
