@@ -2,7 +2,7 @@ import { bigserial, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 export const messages = pgTable("messages", {
-  id: bigserial("id", { mode: "number" }),
+  id: bigserial("id", { mode: "number" }).primaryKey().unique(),
   sender_id: uuid("sender_id").references(() => users.id, {
     onDelete: "cascade",
   }),
