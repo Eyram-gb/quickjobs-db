@@ -4,7 +4,7 @@ import logger from "./logger";
 import { Server as SocketIOServer } from "socket.io";
 import { db } from "./db";
 import { messages } from "../models/schema/messages";
-import { eq, or, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 
 export function socketServer(server: Server) {
   const io = new SocketIOServer(server, {
@@ -68,23 +68,33 @@ export function socketServer(server: Server) {
           .from(messages)
           .where(
             or(
-              eq(messages.sender_id, userId1),
-              eq(messages.sender_id, userId2),
-              eq(messages.recipient_id, userId1),
-              eq(messages.recipient_id, userId2)
+              and(
+                eq(messages.sender_id, userId1),
+                eq(messages.recipient_id, userId2)
+              ),
+              and(
+                eq(messages.sender_id, userId2),
+                eq(messages.recipient_id, userId1)
+              )
             )
           )
           .orderBy(messages.created_at);
-        socket.emit("chatHistory", chatHistory);
+        // socket.emit("chatHistory", chatHistory);
         return callback({
           status: "OK",
           data: {
             chatHistory,
+            userId1,
+            userId2
           },
         });
       } catch (error) {
         logger.error("Socket: Failed to get chat history");
         console.error(error);
+        callback({
+          status: "ERROR",
+          error: "Failed to retrieve chat history",
+        });
         }
       }
     );
@@ -107,7 +117,12 @@ export function socketServer(server: Server) {
 
     // Disconnect connection
     socket.on("disconnect", () => {
-      logger.info("Socket: connection terminated.");
+      try {
+       return logger.info("Socket: connection terminated.");
+      } catch (error) {
+        logger.error("Socket: Failed to disconnect");
+        console.error(error);
+      }
     });
 
     // Enter the comment room for a campaign.
