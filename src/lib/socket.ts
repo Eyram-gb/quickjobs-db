@@ -12,7 +12,7 @@ export function socketServer(server: Server) {
   });
 
   io.on("connection", (socket) => {
-    logger.info(`User just connected to socket:${socket.id}`);
+    logger.info(`User connected to socket: ${socket.id}`);
 
     // Join a chat room
     socket.on("join", (userId: string) => {
@@ -21,34 +21,36 @@ export function socketServer(server: Server) {
     });
 
     // Handle messages
-    socket.on("message", async (payload, callback) => {
+    socket.on("sendMessage", async (payload, callback) => {
       const { senderId, recipientId, message } = payload;
-      logger.info(`Socket: Received message: ${payload}`);
-      console.log(payload);
+      logger.info(`Received message: ${JSON.stringify(payload)}`);
 
       try {
-        
-        const newMessage = await db.insert(messages).values({
+        const [newMessage] = await db.insert(messages).values({
           sender_id: senderId,
           recipient_id: recipientId,
           message_text: message,
         }).returning();
-        return callback({
+
+        logger.info(`New message saved: ${JSON.stringify(newMessage)}`);
+
+        // Emit the new message to both sender and recipient
+        io.to(senderId).to(recipientId).emit("receiveMessage", newMessage);
+        logger.info(`Emitted receiveMessage event to ${senderId} and ${recipientId}`);
+
+        callback({
           status: "OK",
           data: {
             message: newMessage,
           },
         });
       } catch (error) {
-        logger.error("Socket: Failed to add a message to the database");
-        console.error(error);
+        logger.error(`Failed to add message to database: ${error}`);
         callback({
           status: "ERROR",
           error: error as unknown as Error,
         });
       }
-
-     // Save message to database      
     });
 
     // Emit message to both sender and recipient
