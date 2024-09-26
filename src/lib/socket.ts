@@ -61,8 +61,8 @@ export function socketServer(server: Server) {
     // logger.info(`Socket: Message sent from ${senderId} to ${recipientId}`);
     socket.on(
       "getChatHistory",
-      async (data: { userId1: string; userId2: string }, callback) => {
-        const { userId1, userId2 } = data;
+      async (data: { senderId: string; recipientId: string }, callback) => {
+        const { senderId, recipientId } = data;
 
         try {
         const chatHistory = await db
@@ -71,12 +71,12 @@ export function socketServer(server: Server) {
           .where(
             or(
               and(
-                eq(messages.sender_id, userId1),
-                eq(messages.recipient_id, userId2)
+                eq(messages.sender_id, senderId),
+                eq(messages.recipient_id, recipientId)
               ),
               and(
-                eq(messages.sender_id, userId2),
-                eq(messages.recipient_id, userId1)
+                eq(messages.sender_id, recipientId),
+                eq(messages.recipient_id, senderId)
               )
             )
           )
