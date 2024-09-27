@@ -41,3 +41,14 @@ export async function findEmployerApplications(
     )
     .orderBy(applications.created_at);
 }
+
+export async function editApplicationStatus(
+  applicationId: string,
+  status: "pending" | "accepted" | "rejected"
+) {
+  return await db
+    .update(applications)
+    .set({ application_status: status })
+    .where(eq(applications.id, applicationId))
+    .returning();
+}
