@@ -17,13 +17,14 @@ export const newApplication = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return logger.error("Could not insert new application");
-  };
+  }
 }
 
 export const getEmployerApplications = async (req: Request, res: Response) => {
   try {
     const employerId = req.params.id;
-    const gigs = await findEmployerApplications(employerId);
+    const gigId = req.query.gigId as string; // Get gigId from query parameters
+    const gigs = await findEmployerApplications(employerId, gigId); // Pass gigId to the query
     if (!gigs) {
       return res.status(404).json({ message: "No gigs found for this employer" });
     }

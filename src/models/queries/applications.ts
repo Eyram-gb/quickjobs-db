@@ -1,13 +1,16 @@
 import { applications, TNewApplication } from "./../schema/applications";
 import { db } from "../../lib/db";
 import { applicant_profile, gigs, users } from "../schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function insertNewApplication(data: TNewApplication) {
   return db.insert(applications).values(data).returning();
 }
 
-export async function findEmployerApplications(employerId: string) {
+export async function findEmployerApplications(
+  employerId: string,
+  gigId?: string
+) {
   return db
     .select({
       application_id: applications.id,
@@ -30,6 +33,11 @@ export async function findEmployerApplications(employerId: string) {
       eq(applications.applicant_id, applicant_profile.id)
     )
     .leftJoin(users, eq(applicant_profile.user_id, users.id))
-    .where(eq(gigs.employer_id, employerId))
+    .where(
+      // modifying query if there is gigId
+      !gigId
+        ? eq(gigs.employer_id, employerId)
+        : and(eq(gigs.employer_id, employerId), eq(applications.gig_id, gigId))
+    )
     .orderBy(applications.created_at);
 }

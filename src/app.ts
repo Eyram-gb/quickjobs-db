@@ -22,7 +22,7 @@ app.use(cookieParser());
 // Middleware for logging requests
 app.use(morgan("combined", { stream: { write: (msg) => logger.info(msg) } }));
 // Enable CORS for all routes
-app.use(cors(corsOptions));
+app.use(cors());
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "5mb" }));
 
