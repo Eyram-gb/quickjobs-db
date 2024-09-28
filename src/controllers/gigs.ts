@@ -60,7 +60,7 @@ export const createNewGig = async (req: Request, res: Response) => {
 
 export const updateGig = async (req: Request, res: Response) => {
   try {
-    await GigSchema.parseAsync(req.body);
+    // await GigSchema.parseAsync(req.body);
     const gigId = req.params.id;
     const gigBody = (await req.body) as TGig;
     if (!gigId) {

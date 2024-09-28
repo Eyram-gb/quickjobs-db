@@ -42,6 +42,20 @@ export async function findEmployerApplications(
     .orderBy(applications.created_at);
 }
 
+export async function findClientApplications(clientId: string) {
+  return db
+    .select({
+      application_id: applications.id,
+      gig_id: gigs.id,
+      status: applications.application_status,
+      gig_title: gigs.title,
+      gig_description: gigs.description,
+    })
+    .from(applications)
+    .innerJoin(gigs, eq(applications.gig_id, gigs.id))
+    .where(eq(applications.applicant_id, clientId));
+}
+
 export async function editApplicationStatus(
   applicationId: string,
   status: "pending" | "accepted" | "rejected"
