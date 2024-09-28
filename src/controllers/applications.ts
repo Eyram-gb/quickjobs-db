@@ -59,7 +59,7 @@ export const getClientApplications = async (req: Request, res: Response) => {
     logger.error(error);
     return res
       .status(500)
-      .json({ message: "Failed to get employer applications", error });
+      .json({ message: "Failed to get client applications", error });
   }
 };
 
