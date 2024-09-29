@@ -5,6 +5,7 @@ import { Server as SocketIOServer } from "socket.io";
 import { db } from "./db";
 import { messages } from "../models/schema/messages";
 import { and, eq, or, sql } from "drizzle-orm";
+import { applicant_profile, employer_profile } from "../models/schema";
 
 export function socketServer(server: Server) {
   const io = new SocketIOServer(server, {
@@ -26,17 +27,22 @@ export function socketServer(server: Server) {
       logger.info(`Received message: ${JSON.stringify(payload)}`);
 
       try {
-        const [newMessage] = await db.insert(messages).values({
-          sender_id: senderId,
-          recipient_id: recipientId,
-          message_text: message,
-        }).returning();
+        const [newMessage] = await db
+          .insert(messages)
+          .values({
+            sender_id: senderId,
+            recipient_id: recipientId,
+            message_text: message,
+          })
+          .returning();
 
         logger.info(`New message saved: ${JSON.stringify(newMessage)}`);
 
         // Emit the new message to both sender and recipient
         io.to(senderId).to(recipientId).emit("receiveMessage", newMessage);
-        logger.info(`Emitted receiveMessage event to ${senderId} and ${recipientId}`);
+        logger.info(
+          `Emitted receiveMessage event to ${senderId} and ${recipientId}`
+        );
 
         callback({
           status: "OK",
@@ -65,66 +71,98 @@ export function socketServer(server: Server) {
         const { senderId, recipientId } = data;
 
         try {
-        const chatHistory = await db
-          .select()
-          .from(messages)
-          .where(
-            or(
-              and(
-                eq(messages.sender_id, senderId),
-                eq(messages.recipient_id, recipientId)
-              ),
-              and(
-                eq(messages.sender_id, recipientId),
-                eq(messages.recipient_id, senderId)
+          const chatHistory = await db
+            .select()
+            .from(messages)
+            .where(
+              or(
+                and(
+                  eq(messages.sender_id, senderId),
+                  eq(messages.recipient_id, recipientId)
+                ),
+                and(
+                  eq(messages.sender_id, recipientId),
+                  eq(messages.recipient_id, senderId)
+                )
               )
             )
-          )
-          .orderBy(messages.created_at);
-        // socket.emit("chatHistory", chatHistory);
-        return callback({
-          status: "OK",
-          data: {
-            chatHistory,
-          },
-        });
-      } catch (error) {
-        logger.error("Socket: Failed to get chat history");
-        console.error(error);
-        callback({
-          status: "ERROR",
-          error: "Failed to retrieve chat history",
-        });
+            .orderBy(messages.created_at);
+          // socket.emit("chatHistory", chatHistory);
+          return callback({
+            status: "OK",
+            data: {
+              chatHistory,
+            },
+          });
+        } catch (error) {
+          logger.error("Socket: Failed to get chat history");
+          console.error(error);
+          callback({
+            status: "ERROR",
+            error: "Failed to retrieve chat history",
+          });
         }
       }
     );
 
     // Get list of users the user is interacting with
-    socket.on("getUserChats", async (userId: string, callback) => {
-      const userChats = await db
-        .select({
-          chatUser: sql`DISTINCT CASE 
-                WHEN ${messages.sender_id} = ${userId} THEN ${messages.recipient_id} 
-                ELSE ${messages.sender_id} 
-              END`,
-        })
-        .from(messages)
-        .where(
-          or(eq(messages.sender_id, userId), eq(messages.recipient_id, userId))
-        );
-      socket.emit("userChats", userChats);
-      return callback({
-        status: "OK",
-        data: {
-          userChats,
-        },
-      });
-    });
+    socket.on(
+      "getUserChats",
+      async (
+        { userId, user_type }: { userId: string; user_type: string },
+        callback
+      ) => {
+        try {
+          let userChats;
+
+          if (user_type === "client") {
+            userChats = await db
+              .selectDistinct({
+                chatUser: employer_profile.name,
+                userId: employer_profile.user_id,
+              })
+              .from(employer_profile)
+              .innerJoin(
+                messages,
+                eq(messages.recipient_id, employer_profile.user_id)
+              )
+              .where(eq(messages.sender_id, userId));
+          } else if (user_type === "company") {
+            userChats = await db
+              .selectDistinct({
+                chatUser: sql`${applicant_profile.first_name} || ' ' || ${applicant_profile.last_name}`,
+                userId: applicant_profile.user_id,
+              })
+              .from(applicant_profile)
+              .innerJoin(
+                messages,
+                eq(messages.sender_id, applicant_profile.user_id)
+              )
+              .where(eq(messages.recipient_id, userId));
+          }
+
+          socket.emit("userChats", userChats);
+          return callback({
+            status: "OK",
+            data: {
+              userChats,
+            },
+          });
+        } catch (error) {
+          logger.error("Socket: Failed to get user chats");
+          console.error(error);
+          return callback({
+            status: "ERROR",
+            error: "Failed to retrieve user chats",
+          });
+        }
+      }
+    );
 
     // Disconnect connection
     socket.on("disconnect", () => {
       try {
-       return logger.info("Socket: connection terminated.");
+        return logger.info("Socket: connection terminated.");
       } catch (error) {
         logger.error("Socket: Failed to disconnect");
         console.error(error);
