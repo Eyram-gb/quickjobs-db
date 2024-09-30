@@ -23,7 +23,7 @@ export const GigSchema = z.object({
   }),
   location: z.string().optional(),
   budget_range: z.string(),
-  requirements: z.string().optional(),
+  requirements: z.string().array().optional(),
   is_active: z.boolean().default(true),
   is_deleted: z.boolean().default(false).optional(),
   // is_featured: z.boolean().default(false), // Commented out as it's commented in the original schema
