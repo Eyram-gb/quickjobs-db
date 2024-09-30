@@ -43,6 +43,13 @@
       "when": 1727260936004,
       "tag": "0005_mixed_gamora",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1727737814615,
+      "tag": "0006_quiet_moondragon",
+      "breakpoints": true
     }
   ]
 }
