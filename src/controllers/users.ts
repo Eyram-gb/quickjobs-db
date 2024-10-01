@@ -182,7 +182,7 @@ export const updateApplicantProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json(updatedUser);
+    return res.status(201).json(updatedUser);
   } catch (error) {
     logger.error("Failed to update user");
     console.error("Failed to update user: ", error);
@@ -209,7 +209,7 @@ export const updateEmployerProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json(updatedUser);
+    return res.status(201).json(updatedUser);
   } catch (error) {
     logger.error("Failed to update user");
     console.error("Failed to update user: ", error);
