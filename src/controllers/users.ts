@@ -203,7 +203,7 @@ export const updateEmployerProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "no applicant profile provided" });
     }
 
-    const updatedUser = await modifyEmployerProfile(employerProfile);
+    const [updatedUser] = await modifyEmployerProfile(employerProfile);
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
