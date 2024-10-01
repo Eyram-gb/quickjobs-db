@@ -66,15 +66,15 @@ export async function modifyApplicantProfile(
   applicantProfile: ApplicantProfile
 ) {
   return await db
-    .update(users)
+    .update(applicant_profile)
     .set(applicantProfile)
-    .where(eq(users.id, applicantProfile.id))
+    .where(eq(applicant_profile.id, applicantProfile.id))
     .returning();
 }
 export async function modifyEmployerProfile(employerProfile: EmployerProfile) {
   return await db
-    .update(users)
+    .update(employer_profile)
     .set(employerProfile)
-    .where(eq(users.id, employerProfile.id))
+    .where(eq(employer_profile.id, employerProfile.id))
     .returning();
 }

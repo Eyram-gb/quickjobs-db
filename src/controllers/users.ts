@@ -170,8 +170,7 @@ export const updateApplicantProfile = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(400).json({ message: "no user ID provided" });
     }
-
-    // ! destructure 'applicantProfile' to only the data that needs to be sent to the DB
+    
     const applicantProfile = req.body as ApplicantProfile;
     if (!applicantProfile) {
       return res.status(400).json({ message: "no applicant profile provided" });
@@ -199,7 +198,6 @@ export const updateEmployerProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "no user ID provided" });
     }
 
-    // ! destructure 'applicantProfile' to only the data that needs to be sent to the DB
     const employerProfile = req.body as EmployerProfile;
     if (!employerProfile) {
       return res.status(400).json({ message: "no applicant profile provided" });
