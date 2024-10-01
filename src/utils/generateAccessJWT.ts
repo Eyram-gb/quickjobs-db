@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 export const generateAccessJWT = async (id: string) => {
-  const ACCESS_TOKEN = process.env.ACCESS_TOKEN_SECRET;
+  const ACCESS_TOKEN = process.env.QUICKJOBS_ACCESS_TOKEN_SECRET;
   if (!ACCESS_TOKEN) {
     throw new Error("Missing ACCESS_TOKEN environment variable");
   }

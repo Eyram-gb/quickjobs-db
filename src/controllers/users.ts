@@ -10,6 +10,8 @@ import {
   modifyApplicantProfile,
   modifyEmployerProfile,
   findAllEmployers,
+  findApplicantByUserId,
+  findEmployerByUserId,
 } from "../models/queries/users";
 import {
   NewApplicantSchema,
@@ -38,8 +40,7 @@ export const getUserById = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log('--------COOKIE--------', req.headers.cookie);
-    
+    console.log("--------COOKIE--------", req.headers.cookie);
 
     return res.status(200).json(user);
   } catch (error) {
@@ -67,11 +68,11 @@ export const getAllApplicants = async (req: Request, res: Response) => {
 
 export const getApplicantById = async (req: Request, res: Response) => {
   try {
-    const applicantId = req.params.id;
-    if (!applicantId) {
-      return res.status(400).json({ message: "no applicant ID provided" });
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ message: "no user ID provided" });
     }
-    const [applicant] = await findUserById(applicantId);
+    const [applicant] = await findApplicantByUserId(userId);
 
     if (!applicant) {
       return res.status(404).json({ message: "Applicant not found" });
@@ -81,9 +82,11 @@ export const getApplicantById = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error("Failed to get applicant by ID");
     console.error("Failed to get applicant by ID: ", error);
-    return res.status(500).json({ message: "Failed to get applicant by ID", error });
+    return res
+      .status(500)
+      .json({ message: "Failed to get applicant by ID", error });
   }
-}
+};
 
 export const getAllEmployers = async (req: Request, res: Response) => {
   try {
@@ -107,7 +110,7 @@ export const getEmployerById = async (req: Request, res: Response) => {
     if (!employerId) {
       return res.status(400).json({ message: "no employer ID provided" });
     }
-    const [employer] = await findUserById(employerId);
+    const [employer] = await findEmployerByUserId(employerId);
 
     if (!employer) {
       return res.status(404).json({ message: "Employer not found" });
@@ -117,9 +120,11 @@ export const getEmployerById = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error("Failed to get employer by ID");
     console.error("Failed to get employer by ID: ", error);
-    return res.status(500).json({ message: "Failed to get employer by ID", error });
+    return res
+      .status(500)
+      .json({ message: "Failed to get employer by ID", error });
   }
-}
+};
 
 export const createApplicantProfile = async (req: Request, res: Response) => {
   try {
@@ -166,17 +171,20 @@ export const createEmployerProfile = async (req: Request, res: Response) => {
 export const updateApplicantProfile = async (req: Request, res: Response) => {
   // TODO: add a middleware to validate provided params.id
   try {
-    const userId = req.params.id;
-    if (!userId) {
+    const applicantId = req.params.id;
+    if (!applicantId) {
       return res.status(400).json({ message: "no user ID provided" });
     }
-    
+
     const applicantProfile = req.body as ApplicantProfile;
     if (!applicantProfile) {
       return res.status(400).json({ message: "no applicant profile provided" });
     }
 
-    const updatedUser = await modifyApplicantProfile(applicantProfile);
+    const [updatedUser] = await modifyApplicantProfile(
+      applicantProfile,
+      applicantId
+    );
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -193,8 +201,8 @@ export const updateApplicantProfile = async (req: Request, res: Response) => {
 export const updateEmployerProfile = async (req: Request, res: Response) => {
   // TODO: add a middleware to validate provided params.id
   try {
-    const userId = req.params.id;
-    if (!userId) {
+    const employerId = req.params.id;
+    if (!employerId) {
       return res.status(400).json({ message: "no user ID provided" });
     }
 
@@ -203,7 +211,10 @@ export const updateEmployerProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "no applicant profile provided" });
     }
 
-    const [updatedUser] = await modifyEmployerProfile(employerProfile);
+    const [updatedUser] = await modifyEmployerProfile(
+      employerProfile,
+      employerId
+    );
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });

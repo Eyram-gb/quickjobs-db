@@ -46,7 +46,7 @@ export const loginUser = async (req: Request, res: Response) => {
         message: "Invalid request",
       });
     }
-    if (!process.env.ACCESS_TOKEN_SECRET) {
+    if (!process.env.QUICKJOBS_ACCESS_TOKEN_SECRET) {
       return res.status(500).json({
         message: "Access token secret not found",
       });

@@ -36,6 +36,18 @@ export async function findAllUsers() {
 export async function findAllApplicants() {
   return await db.select().from(users).where(eq(users.user_type, "client"));
 }
+export async function findApplicantByUserId(userId: string) {
+  return await db
+    .select()
+    .from(applicant_profile)
+    .where(eq(applicant_profile.user_id, userId));
+}
+export async function findEmployerByUserId(userId: string) {
+  return await db
+    .select()
+    .from(employer_profile)
+    .where(eq(employer_profile.user_id, userId));
+}
 export async function findAllEmployers() {
   return await db.select().from(users).where(eq(users.user_type, "company"));
 }
@@ -63,18 +75,22 @@ export async function insertNewEmployerProfile(
 }
 
 export async function modifyApplicantProfile(
-  applicantProfile: ApplicantProfile
+  applicantProfile: ApplicantProfile,
+  applicantId: string
 ) {
   return await db
     .update(applicant_profile)
     .set(applicantProfile)
-    .where(eq(applicant_profile.id, applicantProfile.id))
+    .where(eq(applicant_profile.id, applicantId))
     .returning();
 }
-export async function modifyEmployerProfile(employerProfile: EmployerProfile) {
+export async function modifyEmployerProfile(
+  employerProfile: EmployerProfile,
+  employerId: string
+) {
   return await db
     .update(employer_profile)
     .set(employerProfile)
-    .where(eq(employer_profile.id, employerProfile.id))
+    .where(eq(employer_profile.id, employerId))
     .returning();
 }
