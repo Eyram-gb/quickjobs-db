@@ -1,6 +1,7 @@
 import {
   bigserial,
   boolean,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -8,6 +9,9 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { employer_profile, industries, users } from ".";
+
+export const experienceEnum = pgEnum("experience", ["entry level", "intermediate", "expert"]);
+export const scheduleEnum = pgEnum("schedule", ["part-time", "full-time"]);
 
 export const gigs = pgTable("gigs", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
@@ -20,6 +24,9 @@ export const gigs = pgTable("gigs", {
   duration: varchar("duration"),
   location: varchar("location"),
   budget_range: varchar("budget_range").notNull(),
+  remote: boolean('remote'),
+  experience: experienceEnum('experience'),
+  schedule: scheduleEnum('schedule'),
   negotiable: boolean("negotiable"),
   requirements: text("requirements").array(),
   industry_id: bigserial("industry_id", { mode: "number" }).references(
