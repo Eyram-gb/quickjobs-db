@@ -6,14 +6,20 @@ import {
   findAllGigs,
   findGigById,
   findGigsByEmployerId,
-  removeGig
+  removeGig,
 } from "../models/queries/gigs";
 import { GigSchema } from "../types/zod-validations/gig";
 import { TGig } from "../models/schema/gigs";
 
 export const getAllGigs = async (req: Request, res: Response) => {
   try {
-    const gigs = await findAllGigs();
+    const { limit, industryId } = req.query; // Extract query parameters
+    const gigs = await findAllGigs({
+      industryId: industryId ? parseInt(industryId as string) : undefined,
+      // employerId: employerId as string,
+      limit: limit ? parseInt(limit as string) : undefined,
+      // offset: offset ? parseInt(offset as string) : undefined,
+    }); // Pass parameters to the query
     if (!gigs) {
       return res.status(404).json({ message: "No gigs found" });
     }
@@ -60,7 +66,7 @@ export const createNewGig = async (req: Request, res: Response) => {
 
 export const updateGig = async (req: Request, res: Response) => {
   try {
-    // await GigSchema.parseAsync(req.body);
+    // await GigSchema.parseAsync(req.body);L
     const gigId = req.params.id;
     const gigBody = (await req.body) as TGig;
     if (!gigId) {
@@ -78,7 +84,7 @@ export const updateGig = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteGig = async (req:Request, res:Response) => {
+export const deleteGig = async (req: Request, res: Response) => {
   try {
     const gigId = req.params.id;
     if (!gigId) {
@@ -90,30 +96,32 @@ export const deleteGig = async (req:Request, res:Response) => {
     }
     const deletedGig = await removeGig(gigId);
     if (!deletedGig) {
-       return res.status(404).json({ message: "Gig not found" });
+      return res.status(404).json({ message: "Gig not found" });
     }
-    
+
     return res.status(204).json({ message: "Gig deleted successfully" });
   } catch (error) {
     console.error(error);
     logger.error(error);
     return res.status(500).json({ message: "Failed to delete gig", error });
   }
-}
-export const getEmployerGigs = async (req:Request, res:Response) => {
-  try{
-    const employerId = req.params.id
-    if(!employerId){
-      return res.status(400).json({message: "No employer ID provided"})
+};
+export const getEmployerGigs = async (req: Request, res: Response) => {
+  try {
+    const employerId = req.params.id;
+    if (!employerId) {
+      return res.status(400).json({ message: "No employer ID provided" });
     }
-    const gigs = await findGigsByEmployerId(employerId)
-    if(!gigs){
-      return res.status(404).json({message: "Gigs not found"})
+    const gigs = await findGigsByEmployerId(employerId);
+    if (!gigs) {
+      return res.status(404).json({ message: "Gigs not found" });
     }
-    return res.status(200).json(gigs)
-  }catch(error){
-    console.error(error)
-    logger.error(error)
-    return res.status(500).json({message: "Failed to get employer gigs", error})
+    return res.status(200).json(gigs);
+  } catch (error) {
+    console.error(error);
+    logger.error(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get employer gigs", error });
   }
-}
+};
