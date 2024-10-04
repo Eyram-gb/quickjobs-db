@@ -13,7 +13,7 @@ import { TGig } from "../models/schema/gigs";
 
 export const getAllGigs = async (req: Request, res: Response) => {
   try {
-    const { limit, industryId } = req.query; // Extract query parameters
+    const { industryId, limit } = req.query; // Extract query parameters
     const gigs = await findAllGigs({
       industryId: industryId ? parseInt(industryId as string) : undefined,
       // employerId: employerId as string,
