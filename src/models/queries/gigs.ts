@@ -1,5 +1,5 @@
 import { employer_profile } from "./../schema/users";
-import { eq, getTableColumns, sql } from "drizzle-orm";
+import { eq, getTableColumns, inArray, sql } from "drizzle-orm";
 import { db } from "../../lib/db";
 import { gigs, TGig } from "../schema/gigs";
 import { applications } from "../schema";
@@ -13,12 +13,13 @@ export async function findAllGigs({
   industryId,
   // employerId,
   limit,
-  // offset,
+  jobTypes,
+  experienceLevels,
 }: {
   industryId?: number;
-  // employerId?: string;
   limit?: number;
-  // offset?: number;
+  jobTypes?: ["part-time", "full-time"];
+  experienceLevels?: ["entry level", "intermediate", "expert"];
 }) {
   const gig = getTableColumns(gigs);
   const query = db
@@ -38,18 +39,19 @@ export async function findAllGigs({
     dynamicQuery.where(eq(gigs.industry_id, industryId));
   }
 
-  // if (employerId) {
-  //   dynamicQuery.where(eq(gigs.employer_id, employerId));
-  // }
-
-  if (limit) {
-    dynamicQuery.limit(limit); 
+  if (jobTypes && jobTypes.length > 0) {
+    dynamicQuery.where(inArray(gigs.schedule, jobTypes));
   }
 
-  // if (offset) {
-  //   dynamicQuery.offset(offset);
-  // }
-const data = await dynamicQuery;
+  if (experienceLevels && experienceLevels.length > 0) {
+    dynamicQuery.where(inArray(gigs.experience, experienceLevels));
+  }
+
+  if (limit) {
+    dynamicQuery.limit(limit);
+  }
+
+  const data = await dynamicQuery;
   return data;
 }
 

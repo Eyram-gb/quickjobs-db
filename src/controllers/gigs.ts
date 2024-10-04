@@ -13,12 +13,22 @@ import { TGig } from "../models/schema/gigs";
 
 export const getAllGigs = async (req: Request, res: Response) => {
   try {
-    const { industryId, limit } = req.query; // Extract query parameters
+    const { industryId, limit, jobTypes, experienceLevels } = req.query; // Extract query parameters
     const gigs = await findAllGigs({
       industryId: industryId ? parseInt(industryId as string) : undefined,
-      // employerId: employerId as string,
       limit: limit ? parseInt(limit as string) : undefined,
-      // offset: offset ? parseInt(offset as string) : undefined,
+
+      jobTypes: jobTypes
+        ? ((jobTypes as string).split(",") as ["part-time", "full-time"])
+        : undefined, // Parse job types as tuple
+        
+      experienceLevels: experienceLevels
+        ? ((experienceLevels as string).split(",") as [
+            "entry level",
+            "intermediate",
+            "expert",
+          ])
+        : undefined, // Parse experience levels as tuple
     }); // Pass parameters to the query
     if (!gigs) {
       return res.status(404).json({ message: "No gigs found" });
