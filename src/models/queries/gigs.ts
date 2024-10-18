@@ -11,15 +11,16 @@ export type GigWithEmployerLogo = TGig & {
 
 export async function findAllGigs({
   industryId,
-  // employerId,
   limit,
   jobTypes,
   experienceLevels,
+  searchInput, // Added searchInput parameter
 }: {
   industryId?: number;
   limit?: number;
   jobTypes?: ["part-time", "full-time"];
   experienceLevels?: ["entry level", "intermediate", "expert"];
+  searchInput?: string; // Added searchInput type
 }) {
   const gig = getTableColumns(gigs);
   const query = db
@@ -49,6 +50,12 @@ export async function findAllGigs({
 
   if (limit) {
     dynamicQuery.limit(limit);
+  }
+
+  if (searchInput) {
+    dynamicQuery.where(
+      sql`${gigs.title} ILIKE ${`%${searchInput}%`} OR ${gigs.description} ILIKE ${`%${searchInput}%`}`
+    ); // Filter by title and description
   }
 
   const data = await dynamicQuery;
