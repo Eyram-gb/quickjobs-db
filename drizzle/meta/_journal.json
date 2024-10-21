@@ -57,6 +57,13 @@
       "when": 1727951005485,
       "tag": "0007_confused_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1729518257510,
+      "tag": "0008_fat_the_hand",
+      "breakpoints": true
     }
   ]
 }
