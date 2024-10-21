@@ -10,8 +10,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { employer_profile, industries, users } from ".";
 
-export const experienceEnum = pgEnum("experience", ["entry level", "intermediate", "expert"]);
-export const scheduleEnum = pgEnum("schedule", ["part-time", "full-time"]);
+export const experienceEnum = pgEnum("experience", ["entry_level", "intermediate", "expert"]);
+export const scheduleEnum = pgEnum("schedule", ["part_time", "full_time", 'internship']);
 
 export const gigs = pgTable("gigs", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
@@ -23,7 +23,7 @@ export const gigs = pgTable("gigs", {
   description: varchar("description"),
   duration: varchar("duration"),
   location: varchar("location"),
-  budget_range: varchar("budget_range").notNull(),
+  budget_range: varchar("budget_range"),
   remote: boolean('remote'),
   experience: experienceEnum('experience'),
   schedule: scheduleEnum('schedule'),

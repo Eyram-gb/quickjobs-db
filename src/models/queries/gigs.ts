@@ -18,8 +18,8 @@ export async function findAllGigs({
 }: {
   industryId?: number;
   limit?: number;
-  jobTypes?: ["part-time", "full-time"];
-  experienceLevels?: ["entry level", "intermediate", "expert"];
+  jobTypes?: ["part_time", "full_time", "internship"];
+  experienceLevels?: ["entry_level", "intermediate", "expert"];
   searchInput?: string; // Added searchInput type
 }) {
   const gig = getTableColumns(gigs);

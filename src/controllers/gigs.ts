@@ -19,11 +19,11 @@ export const getAllGigs = async (req: Request, res: Response) => {
       industryId: industryId ? parseInt(industryId as string) : undefined,
       limit: limit ? parseInt(limit as string) : undefined,
       jobTypes: jobTypes
-        ? ((jobTypes as string).split(",") as ["part-time", "full-time"])
+        ? ((jobTypes as string).split(",") as ["part_time", "full_time", "internship"])
         : undefined,
       experienceLevels: experienceLevels
         ? ((experienceLevels as string).split(",") as [
-            "entry level",
+            "entry_level",
             "intermediate",
             "expert",
           ])
