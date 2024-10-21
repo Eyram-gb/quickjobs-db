@@ -8,8 +8,8 @@ import {
   findGigsByEmployerId,
   removeGig,
 } from "../models/queries/gigs";
-import { GigSchema } from "../types/zod-validations/gig";
-import { TGig } from "../models/schema/gigs";
+// import { GigSchema } from "../types/zod-validations/gig";
+import { InsertGigSchema, TGig } from "../models/schema/gigs";
 
 export const getAllGigs = async (req: Request, res: Response) => {
   try {
@@ -60,7 +60,7 @@ export const getGigById = async (req: Request, res: Response) => {
 
 export const createNewGig = async (req: Request, res: Response) => {
   try {
-    await GigSchema.parseAsync(req.body);
+    await InsertGigSchema.parseAsync(req.body);
     const gigBody = (await req.body) as TGig;
     if (!gigBody) {
       return res.status(400).json({ message: "Invalid Data provided" });
