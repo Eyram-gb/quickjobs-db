@@ -1,0 +1,1 @@
+ALTER TABLE gigs ALTER COLUMN location TYPE jsonb USING location::jsonb;
