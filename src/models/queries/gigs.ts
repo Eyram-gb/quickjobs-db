@@ -3,6 +3,7 @@ import { eq, getTableColumns, inArray, sql } from "drizzle-orm";
 import { db } from "../../lib/db";
 import { gigs, TGig } from "../schema/gigs";
 import { applications } from "../schema";
+import { industries } from "../schema";
 
 // Define a new type that includes all fields from gigs and logo_url from employer_profile
 export type GigWithEmployerLogo = TGig & {
@@ -77,6 +78,8 @@ export async function findGigById(id: string) {
     .where(eq(gigs.id, id));
 }
 
+
+
 export async function createGig(gigBody: TGig) {
   return await db.insert(gigs).values(gigBody).returning();
 }
@@ -95,4 +98,19 @@ export async function removeGig(id: string) {
 
 export async function findGigsByEmployerId(id: string) {
   return await db.select().from(gigs).where(eq(gigs.employer_id, id));
+}
+
+export async function countGigsByIndustry() {
+  const query = db
+    .select({
+      industry_id: gigs.industry_id,
+      industry_name: industries.name, // Added industry name
+      gig_count: sql<number>`count(${gigs.id})`,
+    })
+    .from(gigs)
+    .innerJoin(industries, eq(industries.id, gigs.industry_id))
+    .groupBy(gigs.industry_id, industries.name);
+
+  const data = await query;
+  return data;
 }

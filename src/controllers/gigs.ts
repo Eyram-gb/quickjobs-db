@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import logger from "../lib/logger";
 import {
+  countGigsByIndustry,
   createGig,
   editGig,
   findAllGigs,
@@ -13,13 +14,18 @@ import { InsertGigSchema, TGig } from "../models/schema/gigs";
 
 export const getAllGigs = async (req: Request, res: Response) => {
   try {
-    const { industryId, limit, jobTypes, experienceLevels, searchInput } = req.query; // Added searchInput
-    console.log(req.query)
+    const { industryId, limit, jobTypes, experienceLevels, searchInput } =
+      req.query; // Added searchInput
+    console.log(req.query);
     const gigs = await findAllGigs({
       industryId: industryId ? parseInt(industryId as string) : undefined,
       limit: limit ? parseInt(limit as string) : undefined,
       jobTypes: jobTypes
-        ? ((jobTypes as string).split(",") as ["part_time", "full_time", "internship"])
+        ? ((jobTypes as string).split(",") as [
+            "part_time",
+            "full_time",
+            "internship",
+          ])
         : undefined,
       experienceLevels: experienceLevels
         ? ((experienceLevels as string).split(",") as [
@@ -133,5 +139,18 @@ export const getEmployerGigs = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ message: "Failed to get employer gigs", error });
+  }
+};
+
+export const getIndustryGigsCount = async (res: Response) => {
+  try {
+    const gigsCount = countGigsByIndustry();
+    return res.status(200).json(gigsCount);
+  } catch (error) {
+    console.error(error);
+    logger.error(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to get gigs count.", error });
   }
 };
