@@ -142,9 +142,12 @@ export const getEmployerGigs = async (req: Request, res: Response) => {
   }
 };
 
-export const getIndustryGigsCount = async (res: Response) => {
+export const getIndustryGigsCount = async (req: Request, res: Response) => {
   try {
-    const gigsCount = countGigsByIndustry();
+    const gigsCount = await countGigsByIndustry();
+    if (!gigsCount) {
+      return res.status(404).json({ message: "No gigs count found" });
+    }
     return res.status(200).json(gigsCount);
   } catch (error) {
     console.error(error);

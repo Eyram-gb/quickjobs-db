@@ -101,7 +101,7 @@ export async function findGigsByEmployerId(id: string) {
 }
 
 export async function countGigsByIndustry() {
-  const query = db
+  return await db
     .select({
       industry_id: gigs.industry_id,
       industry_name: industries.name, // Added industry name
@@ -111,6 +111,4 @@ export async function countGigsByIndustry() {
     .innerJoin(industries, eq(industries.id, gigs.industry_id))
     .groupBy(gigs.industry_id, industries.name);
 
-  const data = await query;
-  return data;
 }
