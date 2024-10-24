@@ -71,6 +71,13 @@
       "when": 1729551600814,
       "tag": "0009_third_killer_shrike",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1729800672959,
+      "tag": "0010_fair_leo",
+      "breakpoints": true
     }
   ]
 }
