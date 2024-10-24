@@ -162,9 +162,10 @@ export function socketServer(server: Server) {
     );
 
     socket.on('getNotifications', async(payload: {userId:string},callback)=>{
-
+console.log('-----getting notiications-----')
       try {
         const notifications_data = await db.select().from(notifications).where(and(eq(notifications.user_id, payload.userId), eq(notifications.read, false)))
+        console.log(notifications_data);
         return callback({
           status: "OK",
           data: {
