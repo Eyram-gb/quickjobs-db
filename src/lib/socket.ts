@@ -1,3 +1,4 @@
+import { notifications } from './../models/schema/notifications';
 import { Server } from "http";
 import { corsOptions } from "./constants";
 import logger from "./logger";
@@ -6,8 +7,6 @@ import { db } from "./db";
 import { messages } from "../models/schema/messages";
 import { and, eq, or, sql } from "drizzle-orm";
 import { applicant_profile, employer_profile } from "../models/schema";
-import { notifications } from "../models/schema/notifications";
-
 export function socketServer(server: Server) {
   const io = new SocketIOServer(server, {
     cors: corsOptions,
@@ -106,6 +105,8 @@ export function socketServer(server: Server) {
       }
     );
 
+
+
     // Get list of users the user is interacting with
     socket.on(
       "getUserChats",
@@ -160,10 +161,31 @@ export function socketServer(server: Server) {
       }
     );
 
+    socket.on('getNotifications', async(payload: {userId:string},callback)=>{
+
+      try {
+        const notifications_data = await db.select().from(notifications).where(and(eq(notifications.user_id, payload.userId), eq(notifications.read, false)))
+        return callback({
+          status: "OK",
+          data: {
+            notifications_data,
+          },
+        });
+      } catch (error) {
+        logger.error("Socket: Failed to unread notifications");
+        console.error(error);
+        callback({
+          status: "ERROR",
+          error: "Failed to retrieve unread notifications",
+        });
+      }
+    })
+
     socket.on("notifications", async (payload, callback) => {
-      const { notification_type, user_id, message } = payload;
+      const { type, user_id, message } = payload;
+      console.log(payload)
       logger.info(
-        `received notification: ${JSON.stringify(payload, notification_type)}`
+        `received notification: ${JSON.stringify(payload, type)}`
       );
 
       try {
@@ -172,7 +194,7 @@ export function socketServer(server: Server) {
           .values({
             user_id,
             message,
-            type: notification_type,
+            type,
           })
           .returning();
 
