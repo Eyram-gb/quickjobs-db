@@ -6,6 +6,7 @@ import { db } from "./db";
 import { messages } from "../models/schema/messages";
 import { and, eq, or, sql } from "drizzle-orm";
 import { applicant_profile, employer_profile } from "../models/schema";
+import { notifications } from "../models/schema/notifications";
 
 export function socketServer(server: Server) {
   const io = new SocketIOServer(server, {
@@ -158,6 +159,42 @@ export function socketServer(server: Server) {
         }
       }
     );
+
+    socket.on("notifications", async (payload, callback) => {
+      const { notification_type, user_id, message } = payload;
+      logger.info(
+        `received notification: ${JSON.stringify(payload, notification_type)}`
+      );
+
+      try {
+        const [newNotification] = await db
+          .insert(notifications)
+          .values({
+            user_id,
+            message,
+            type: notification_type,
+          })
+          .returning();
+
+          // Emit new notficaation
+        io.to(user_id).emit("receivedNotification", newNotification);
+
+        callback({
+          status: "OK",
+          data: {
+            data: newNotification,
+          },
+        });
+      } catch (error) {
+        logger.error(
+          `An error occurred while trying to add notifications: ${error}`
+        );
+        callback({
+          status: "ERROR",
+          error: error as unknown as Error,
+        });
+      }
+    });
 
     // Disconnect connection
     socket.on("disconnect", () => {
