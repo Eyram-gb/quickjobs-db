@@ -78,6 +78,13 @@
       "when": 1729800672959,
       "tag": "0010_fair_leo",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1752216599804,
+      "tag": "0011_steep_blob",
+      "breakpoints": true
     }
   ]
 }

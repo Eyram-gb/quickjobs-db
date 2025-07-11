@@ -1,4 +1,5 @@
-import { notifications } from './../models/schema/notifications';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { notifications } from "./../models/schema/notifications";
 import { Server } from "http";
 import { corsOptions } from "./constants";
 import logger from "./logger";
@@ -20,6 +21,13 @@ export function socketServer(server: Server) {
       socket.join(userId);
       logger.info(`Socket: User ${userId} joined their chat room.`);
     });
+
+    // Example: Always check callback and return structured errors
+    function safeCallback(callback: any, data: any) {
+      if (typeof callback === "function") {
+        callback(data);
+      }
+    }
 
     // Handle messages
     socket.on("sendMessage", async (payload, callback) => {
@@ -44,7 +52,7 @@ export function socketServer(server: Server) {
           `Emitted receiveMessage event to ${senderId} and ${recipientId}`
         );
 
-        callback({
+        safeCallback(callback, {
           status: "OK",
           data: {
             message: newMessage,
@@ -52,9 +60,12 @@ export function socketServer(server: Server) {
         });
       } catch (error) {
         logger.error(`Failed to add message to database: ${error}`);
-        callback({
+        safeCallback(callback, {
           status: "ERROR",
-          error: error as unknown as Error,
+          error: {
+            message: "Failed to add message to database",
+            details: error instanceof Error ? error.message : error,
+          },
         });
       }
     });
@@ -87,8 +98,7 @@ export function socketServer(server: Server) {
               )
             )
             .orderBy(messages.created_at);
-          // socket.emit("chatHistory", chatHistory);
-          return callback({
+          safeCallback(callback, {
             status: "OK",
             data: {
               chatHistory,
@@ -97,15 +107,16 @@ export function socketServer(server: Server) {
         } catch (error) {
           logger.error("Socket: Failed to get chat history");
           console.error(error);
-          callback({
+          safeCallback(callback, {
             status: "ERROR",
-            error: "Failed to retrieve chat history",
+            error: {
+              message: "Failed to retrieve chat history",
+              details: error instanceof Error ? error.message : error,
+            },
           });
         }
       }
     );
-
-
 
     // Get list of users the user is interacting with
     socket.on(
@@ -115,10 +126,11 @@ export function socketServer(server: Server) {
         callback
       ) => {
         try {
-          let userChats;
+          let userChats: any[] = [];
 
           if (user_type === "client") {
-            userChats = await db
+            // Get all employers the client has chatted with (as sender or recipient)
+            const sentChats = await db
               .selectDistinct({
                 chatUser: employer_profile.name,
                 userId: employer_profile.user_id,
@@ -129,8 +141,29 @@ export function socketServer(server: Server) {
                 eq(messages.recipient_id, employer_profile.user_id)
               )
               .where(eq(messages.sender_id, userId));
+
+            const receivedChats = await db
+              .selectDistinct({
+                chatUser: employer_profile.name,
+                userId: employer_profile.user_id,
+              })
+              .from(employer_profile)
+              .innerJoin(
+                messages,
+                eq(messages.sender_id, employer_profile.user_id)
+              )
+              .where(eq(messages.recipient_id, userId));
+
+            // Merge and deduplicate
+            userChats = [
+              ...sentChats,
+              ...receivedChats.filter(
+                (rc) => !sentChats.some((sc) => sc.userId === rc.userId)
+              ),
+            ];
           } else if (user_type === "company") {
-            userChats = await db
+            // Get all applicants the company has chatted with (as sender or recipient)
+            const sentChats = await db
               .selectDistinct({
                 chatUser: sql`${applicant_profile.first_name} || ' ' || ${applicant_profile.last_name}`,
                 userId: applicant_profile.user_id,
@@ -141,10 +174,29 @@ export function socketServer(server: Server) {
                 eq(messages.sender_id, applicant_profile.user_id)
               )
               .where(eq(messages.recipient_id, userId));
+
+            const receivedChats = await db
+              .selectDistinct({
+                chatUser: sql`${applicant_profile.first_name} || ' ' || ${applicant_profile.last_name}`,
+                userId: applicant_profile.user_id,
+              })
+              .from(applicant_profile)
+              .innerJoin(
+                messages,
+                eq(messages.recipient_id, applicant_profile.user_id)
+              )
+              .where(eq(messages.sender_id, userId));
+
+            // Merge and deduplicate
+            userChats = [
+              ...sentChats,
+              ...receivedChats.filter(
+                (rc) => !sentChats.some((sc) => sc.userId === rc.userId)
+              ),
+            ];
           }
 
-          socket.emit("userChats", userChats);
-          return callback({
+          safeCallback(callback, {
             status: "OK",
             data: {
               userChats,
@@ -153,40 +205,54 @@ export function socketServer(server: Server) {
         } catch (error) {
           logger.error("Socket: Failed to get user chats");
           console.error(error);
-          return callback({
+          safeCallback(callback, {
             status: "ERROR",
-            error: "Failed to retrieve user chats",
+            error: {
+              message: "Failed to retrieve user chats",
+              details: error instanceof Error ? error.message : error,
+            },
           });
         }
       }
     );
 
-    socket.on('getNotifications', async(payload: {userId:string},callback)=>{
-console.log('-----getting notiications-----')
-      try {
-        const notifications_data = await db.select().from(notifications).where(and(eq(notifications.user_id, payload.userId), eq(notifications.read, false)))
-        console.log(notifications_data);
-        return callback({
-          status: "OK",
-          data: {
-            notifications_data,
-          },
-        });
-      } catch (error) {
-        logger.error("Socket: Failed to unread notifications");
-        console.error(error);
-        callback({
-          status: "ERROR",
-          error: "Failed to retrieve unread notifications",
-        });
+    socket.on(
+      "getNotifications",
+      async (payload: { userId: string }, callback) => {
+        try {
+          const notifications_data = await db
+            .select()
+            .from(notifications)
+            .where(
+              and(
+                eq(notifications.user_id, payload.userId),
+                eq(notifications.read, false)
+              )
+            );
+          safeCallback(callback, {
+            status: "OK",
+            data: {
+              notifications_data,
+            },
+          });
+        } catch (error) {
+          logger.error("Socket: Failed to unread notifications");
+          console.error(error);
+          safeCallback(callback, {
+            status: "ERROR",
+            error: {
+              message: "Failed to retrieve unread notifications",
+              details: error instanceof Error ? error.message : error,
+            },
+          });
+        }
       }
-    })
+    );
 
     socket.on("notifications", async (payload, callback) => {
       const { type, user_id, message } = payload;
-      console.log(payload)
       logger.info(
-        `received notification: ${JSON.stringify(payload, type)}`
+        `+++++++++++++received notification+++++++: ${JSON.stringify(payload, type)}`
       );
 
       try {
@@ -199,10 +265,18 @@ console.log('-----getting notiications-----')
           })
           .returning();
 
-          // Emit new notficaation
-        io.to(user_id).emit("receivedNotification", newNotification);
+        // Emit new notification only if user is connected
+        const room = io.sockets.adapter.rooms.get(user_id);
+        if (room && room.size > 0) {
+          io.to(user_id).emit("receivedNotification", newNotification);
+          logger.info(`Emitted receivedNotification event to ${user_id}`);
+        } else {
+          logger.info(
+            `User ${user_id} not connected, notification not emitted`
+          );
+        }
 
-        callback({
+        safeCallback(callback, {
           status: "OK",
           data: {
             data: newNotification,
@@ -212,9 +286,12 @@ console.log('-----getting notiications-----')
         logger.error(
           `An error occurred while trying to add notifications: ${error}`
         );
-        callback({
+        safeCallback(callback, {
           status: "ERROR",
-          error: error as unknown as Error,
+          error: {
+            message: "Failed to add notification",
+            details: error instanceof Error ? error.message : error,
+          },
         });
       }
     });
@@ -234,3 +311,6 @@ console.log('-----getting notiications-----')
 
   return io;
 }
+
+// Add a comment/reminder for DB indexes
+// TODO: Ensure DB indexes exist on messages.sender_id, messages.recipient_id, messages.created_at for performance

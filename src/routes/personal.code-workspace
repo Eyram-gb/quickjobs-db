@@ -1,10 +1,22 @@
 {
-	"folders": [
-		{
-			"path": "../.."
-		},
-		{
-			"path": "../../../quickjobs-frontend"
-		}
-	]
+  "folders": [
+    {
+      "path": "../..",
+    },
+    {
+      "path": "../../../quickjobs-frontend",
+    },
+    {
+      "path": "../../../creacy-photography",
+    },
+    {
+      "path": "../../../brand-hub",
+    },
+    {
+      "path": "../../../shuri",
+    },
+    {
+      "path": "../../../charisma-dental",
+    },
+  ],
 }
