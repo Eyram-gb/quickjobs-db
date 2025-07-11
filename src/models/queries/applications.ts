@@ -11,6 +11,8 @@ export async function findEmployerApplications(
   employerId: string,
   gigId?: string
 ) {
+  const validGigId =
+    gigId && gigId !== "" && gigId !== "undefined" ? gigId : undefined;
   return db
     .select({
       application_id: applications.id,
@@ -34,10 +36,12 @@ export async function findEmployerApplications(
     )
     .leftJoin(users, eq(applicant_profile.user_id, users.id))
     .where(
-      // modifying query if there is gigId
-      !gigId
+      !validGigId
         ? eq(gigs.employer_id, employerId)
-        : and(eq(gigs.employer_id, employerId), eq(applications.gig_id, gigId))
+        : and(
+            eq(gigs.employer_id, employerId),
+            eq(applications.gig_id, validGigId)
+          )
     )
     .orderBy(applications.created_at);
 }

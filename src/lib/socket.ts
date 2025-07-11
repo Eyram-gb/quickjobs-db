@@ -34,7 +34,24 @@ export function socketServer(server: Server) {
       const { senderId, recipientId, message } = payload;
       logger.info(`Received message: ${JSON.stringify(payload)}`);
 
+      // Validate input
+      if (!senderId || !recipientId || !message) {
+        logger.error(
+          `Missing fields: senderId=${senderId}, recipientId=${recipientId}, message=${message}`
+        );
+        safeCallback(callback, {
+          status: "ERROR",
+          error: {
+            message: "Missing required fields",
+          },
+        });
+        return;
+      }
+
       try {
+        logger.info(
+          `Inserting message: senderId=${senderId}, recipientId=${recipientId}, message=${message}`
+        );
         const [newMessage] = await db
           .insert(messages)
           .values({
@@ -46,7 +63,6 @@ export function socketServer(server: Server) {
 
         logger.info(`New message saved: ${JSON.stringify(newMessage)}`);
 
-        // Emit the new message to both sender and recipient
         io.to(senderId).to(recipientId).emit("receiveMessage", newMessage);
         logger.info(
           `Emitted receiveMessage event to ${senderId} and ${recipientId}`
