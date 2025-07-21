@@ -50,7 +50,7 @@ export function socketServer(server: Server) {
 
       try {
         logger.info(
-          `Inserting message: senderId=${senderId}, recipientId=${recipientId}, message=${message}`
+          `Inserting message: senderId=${senderId}, /n recipientId=${recipientId}, /n message=${message}`
         );
         const [newMessage] = await db
           .insert(messages)
@@ -70,9 +70,7 @@ export function socketServer(server: Server) {
 
         safeCallback(callback, {
           status: "OK",
-          data: {
-            message: newMessage,
-          },
+          data: { message: newMessage },
         });
       } catch (error) {
         logger.error(`Failed to add message to database: ${error}`);
@@ -114,6 +112,7 @@ export function socketServer(server: Server) {
               )
             )
             .orderBy(messages.created_at);
+            
           safeCallback(callback, {
             status: "OK",
             data: {
